@@ -15,3 +15,6 @@ workflows:
   default:
     jobs:
       - hello-world
+
+# TODO: backend build job and fail screen shot
+# TODO: frontend build job and fail screen shot
