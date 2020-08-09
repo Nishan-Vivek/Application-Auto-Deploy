@@ -10,5 +10,4 @@
 
 |Criteria   |Meets Specifications   |   |
 |---|---|---|
-| Utilize Deployment Strategies to design and build CI/CD pipelines that support Continuous Delivery processes.  |Evidence of code-based CI/CD configuration in the form of yaml files in your git repository. [URL01]   
-url 2 |  |
+| Utilize Deployment Strategies to design and build CI/CD pipelines that support Continuous Delivery processes.  |Evidence of code-based CI/CD configuration in the form of yaml files in your git repository. [URL01] <br /> <br /> url 2 |  |
