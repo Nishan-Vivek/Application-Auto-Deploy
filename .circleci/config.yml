@@ -52,8 +52,28 @@ jobs:
               environment:
                   JEST_JUNIT_OUTPUT_DIR: "./reports/junit/"
           - store_test_results:
-              path: ./backend/reports/junit/           
-          
+              path: ./backend/reports/junit/
+
+  test-frontend:
+      docker:
+          - image: cimg/node:lts
+      steps:
+        - checkout
+        - run:
+            name: Install Dependencies Frontend
+            command: |
+              cd frontend
+              npm i
+        - run:
+            name: Unit Test Frontend
+            command: |
+              cd frontend
+              mkdir -p ./reports/junit/
+              npm run test:report
+            environment:
+              JEST_JUNIT_OUTPUT_DIR: "./reports/junit/"
+        - store_test_results:
+            path: ./frontend/reports/junit/
 
 workflows:
   default:
@@ -61,3 +81,4 @@ workflows:
       - build-backend
       - build-frontend
       - test-backend
+      - test-frontend
