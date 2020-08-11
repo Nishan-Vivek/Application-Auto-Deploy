@@ -18,3 +18,4 @@ workflows:
 
 # TODO: backend build job and fail screen shot
 # TODO: frontend build job and fail screen shot
+# TODO: test build syc
