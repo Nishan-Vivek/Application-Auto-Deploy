@@ -3,7 +3,7 @@ version: 2.1
 jobs:
   build-backend:
     docker: 
-      - image: cimg/node:10.20
+      - image: cimg/node:lts
     steps:
       - checkout 
       - run: 
@@ -19,7 +19,7 @@ jobs:
 
   build-frontend:
     docker:
-      - image: cimg/node:10.20
+      - image: cimg/node:lts
     steps:
       - checkout
       - run:
