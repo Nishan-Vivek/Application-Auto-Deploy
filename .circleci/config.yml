@@ -32,9 +32,32 @@ jobs:
           command: |
             cd frontend
             npm run build
+  
+  test-backend:
+      docker:
+          - image: cimg/node:lts
+      steps:
+          - checkout
+          - run: 
+              name: Install Dependencies Backend
+              command: |
+                cd backend
+                npm i
+          - run:
+              name: Unit Test Backend
+              command: |
+                cd backend
+                mkdir -p ./reports/junit/
+                npm run test:report                
+              environment:
+                  JEST_JUNIT_OUTPUT_DIR: "./reports/junit/"
+          - store_test_results:
+              path: ./reports/junit/           
+          
 
 workflows:
   default:
     jobs:      
       - build-backend
       - build-frontend
+      - test-backend
