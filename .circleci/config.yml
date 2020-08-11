@@ -69,6 +69,7 @@ jobs:
             command: |
               cd frontend
               mkdir -p ./reports/junit/
+              npm run build
               npm run test:report
             environment:
               JEST_JUNIT_OUTPUT_DIR: "./reports/junit/"
