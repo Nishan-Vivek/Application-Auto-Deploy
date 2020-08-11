@@ -11,11 +11,29 @@ jobs:
           command: |
             echo "Hello World"
 
+  build-backend:
+    docker: 
+      - image: cimg/node:10.20
+    steps:
+      - checkout 
+      - run: 
+          name: Install Dependenices Backend
+          command: |
+            cd backend
+            npm i
+      - run: 
+          name: Build Backend
+          command: |
+            pwd
+
+
+
+
+
 workflows:
   default:
     jobs:
       - hello-world
-
+      - build-backend
 # TODO: backend build job and fail screen shot
 # TODO: frontend build job and fail screen shot
-# TODO: test build syc
