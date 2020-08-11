@@ -1,16 +1,6 @@
 version: 2.1
 
 jobs:
-  hello-world:
-    docker:
-      - image: amazon/aws-cli
-    steps:
-      - checkout
-      - run:
-          name: Say Hello
-          command: |
-            echo "Hello World"
-
   build-backend:
     docker: 
       - image: cimg/node:10.20
@@ -24,16 +14,13 @@ jobs:
       - run: 
           name: Build Backend
           command: |
-            pwd
-
-
-
-
+            cd backend
+            npm run build
 
 workflows:
   default:
-    jobs:
-      - hello-world
+    jobs:      
       - build-backend
 # TODO: backend build job and fail screen shot
 # TODO: frontend build job and fail screen shot
+# TODO: Build  on master only
