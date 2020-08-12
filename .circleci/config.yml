@@ -115,6 +115,6 @@ workflows:
       - build-frontend
       - test-backend
       - test-frontend
-      - audit-backend-dependencies
-      - audit-frontend-dependencies
+      # - audit-backend-dependencies
+      # - audit-frontend-dependencies
       - test-slack-fail
