@@ -109,7 +109,8 @@ jobs:
     docker: 
       - image: cimg/node:lts
     steps:
-      - run: "return 0"
+      - run: |
+          exit 0
       - slack/notify-on-failure
 
 
