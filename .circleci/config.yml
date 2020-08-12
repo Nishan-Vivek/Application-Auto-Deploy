@@ -102,6 +102,12 @@ jobs:
           cd frontend
           npm audit --audit-level=critical
 
+  test-slack-fail:
+    docker: 
+      - image: cimg/node:lts
+    steps:
+      - run: return 1
+
 workflows:
   default:
     jobs:      
@@ -111,4 +117,4 @@ workflows:
       - test-frontend
       - audit-backend-dependencies
       - audit-frontend-dependencies
-
+      - test-slack-fail
