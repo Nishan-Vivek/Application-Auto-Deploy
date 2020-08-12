@@ -1,16 +1,26 @@
 version: 2.1
 
+commands:
+  install-dependencies:
+    description: "Install dependencies for the given application layer"
+    parameters:
+      layer:
+        type: string
+    steps:
+      - run: 
+          name: Install << parameters.layer >> dependencies
+          command: |
+            cd << parameters.layer >> 
+            npm i
+
 jobs:
   build-backend:
     docker: 
       - image: cimg/node:lts
     steps:
       - checkout 
-      - run: 
-          name: Install Dependencies Backend
-          command: |
-            cd backend
-            npm i
+      - install-dependencies:
+          layer: "backend"
       - run: 
           name: Build Backend
           command: |
@@ -22,11 +32,8 @@ jobs:
       - image: cimg/node:lts
     steps:
       - checkout
-      - run:
-          name: Install Dependencies Frontend
-          command: |
-            cd frontend
-            npm i 
+      - install-dependencies:
+          layer: "frontend" 
       - run:
           name: Build Frontend
           command: |
@@ -38,11 +45,8 @@ jobs:
           - image: cimg/node:lts
       steps:
           - checkout
-          - run: 
-              name: Install Dependencies Backend
-              command: |
-                cd backend
-                npm i
+          - install-dependencies:
+              layer: "backend"
           - run:
               name: Unit Test Backend
               command: |
@@ -59,11 +63,8 @@ jobs:
           - image: cimg/node:lts
       steps:
         - checkout
-        - run:
-            name: Install Dependencies Frontend
-            command: |
-              cd frontend
-              npm i
+        - install-dependencies:
+            layer: "frontend"
         - run:
             name: Unit Test Frontend
             command: |
@@ -80,11 +81,26 @@ jobs:
       - image: cimg/node:lts
     steps:
       - checkout
+      - install-dependencies:
+          layer: "backend"
       - run:
           name: Audit backend Dependencies
           command: |
             cd backend
             npm audit --audit-level=critical
+
+  audit-frontend-dependencies:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - install-dependencies:
+          layer: "frontend"
+      - run:
+         name: Audit frontend dependencies
+         command: |
+          cd frontend
+          npm audit --audit-level=critical
 
 workflows:
   default:
@@ -94,3 +110,5 @@ workflows:
       - test-backend
       - test-frontend
       - audit-backend-dependencies
+      - audit-frontend-dependencies
+
