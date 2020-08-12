@@ -75,6 +75,17 @@ jobs:
         - store_test_results:
             path: ./frontend/reports/junit/
 
+  audit-backend-dependencies:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - run:
+          name: Audit backend Dependencies
+          command: |
+            cd backend
+            npm audit --audit-level=critical
+
 workflows:
   default:
     jobs:      
@@ -82,3 +93,4 @@ workflows:
       - build-frontend
       - test-backend
       - test-frontend
+      - audit-backend-dependencies
