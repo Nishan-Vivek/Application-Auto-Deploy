@@ -70,3 +70,5 @@ node_modules
 dist
 frontend/package-lock.json
 local.yml
+backend/junit.xml
+frontend/junit.xml
