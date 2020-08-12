@@ -1,5 +1,8 @@
 version: 2.1
 
+orbs:
+    slack: circleci/slack@3.4.2
+
 commands:
   install-dependencies:
     description: "Install dependencies for the given application layer"
@@ -107,6 +110,8 @@ jobs:
       - image: cimg/node:lts
     steps:
       - run: return 1
+      - slack/notify-on-failure
+
 
 workflows:
   default:
