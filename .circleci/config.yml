@@ -109,17 +109,18 @@ jobs:
     docker: 
       - image: cimg/node:lts
     steps:
-      - run: return 1
+      - run: return 0
       - slack/notify-on-failure
 
 
 workflows:
   default:
     jobs:      
-      - build-backend
-      - build-frontend
-      - test-backend
-      - test-frontend
+      # - build-backend
+      # - build-frontend
+      # - test-backend
+      # - test-frontend
       # - audit-backend-dependencies
       # - audit-frontend-dependencies
       - test-slack-fail
+      
