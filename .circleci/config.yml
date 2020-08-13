@@ -122,8 +122,8 @@ jobs:
           profile-name: default
       - run: |
           aws cloudformation deploy --template-file .circleci/files/backend.yml \
-            --stack-name "backend{$CIRCLE_WORKFLOW_ID:0:7}" \
-            --parameter-overrides ID="{$CIRCLE_WORKFLOW_ID:0:7}" \
+            --stack-name "backend${CIRCLE_WORKFLOW_ID:0:7}" \
+            --parameter-overrides ID="${CIRCLE_WORKFLOW_ID:0:7}" \
             --tags project=udacity
 
 
