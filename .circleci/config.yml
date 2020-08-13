@@ -128,10 +128,29 @@ jobs:
               --parameter-overrides ID="deployment-${CIRCLE_WORKFLOW_ID:0:7}" \
               --tags project=udacity
       - run:
-          name: describe failure events
+          name: describe events on failure
           command: |
             aws cloudformation describe-stack-events --stack-name "backend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
+
+  create-infra-frontend:
+      executor: aws-cli/default
+      steps:
+        - checkout
+        - aws-cli/setup:
+            profile-name: default
+        - run:
+            name: Create Infra frontend
+            command: |
+              aws cloudformation deploy --template-file .circleci/files/frontend.yml \
+                --stack-name "frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+                --parameter-overrides ID="deployment-${CIRCLE_WORKFLOW_ID:0:7}" \
+                --tags project=udacity
+        - run:
+            name: describe events on failure
+            command: |
+              aws cloudformation describe-stack-events --stack-name "backend-${CIRCLE_WORKFLOW_ID:0:7}"
+            when: on_fail
 
 
 workflows:
@@ -143,5 +162,6 @@ workflows:
       # - test-frontend
       # - audit-backend-dependencies
       # - audit-frontend-dependencies
-      - create-infra-backend
+      # - create-infra-backend
+        - create-infra-frontend
       
