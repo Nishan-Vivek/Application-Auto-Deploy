@@ -120,7 +120,10 @@ jobs:
       - checkout
       - aws-cli/setup:
           profile-name: default
-      - run: aws s3 ls         
+      - run: |
+          aws cloudformation deploy --template-file .circleci/files/backend.yml \
+            --stack-name "backend-${CIRCLE_WORKFLOW_ID:0:7}" \
+            --tags project=udacity        
 
 
 workflows:
