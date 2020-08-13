@@ -2,10 +2,12 @@ version: 2.1
 
 orbs:
     slack: circleci/slack@3.4.2
+    aws-cli: circleci/aws-cli@1.2.1
+
 
 commands:
   install-dependencies:
-    description: "Install dependencies for the given application layer"
+    description: "Install dependencies for the given application layer (frontend/backend)"
     parameters:
       layer:
         type: string
@@ -112,13 +114,21 @@ jobs:
           npm audit --audit-level=critical
       - slack/notify-on-failure
 
+  create-infra-backend:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - run: aws s3 ls         
+
+
 workflows:
   default:
     jobs:      
-      - build-backend
-      - build-frontend
-      - test-backend
-      - test-frontend
-      - audit-backend-dependencies
-      - audit-frontend-dependencies      
+      # - build-backend
+      # - build-frontend
+      # - test-backend
+      # - test-frontend
+      # - audit-backend-dependencies
+      # - audit-frontend-dependencies
+      - create-infra-backend      
       
