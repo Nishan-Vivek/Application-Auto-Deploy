@@ -17,3 +17,8 @@ circleci local execute -c process.yml --job JOB_NAME
 Difference between running circleci cli locally and running remotely with test-frontend job. Required oauth-sign added to package.json to work on remote.
 Added jest-junit+reports to package.json for frontend to enable test reporting in circlci. 
 
+
+TODO: Save the new back-end url for later use (the front-end needs it). This could be done with MemStash.io.
+        ?? Workspaces vs memstash.io... why use another service?
+TODO: New S3 Bucket for front-end.
+TODO: Save the old bucket arn in case you need it later (for rollback). This could be done with MemStash.io.
