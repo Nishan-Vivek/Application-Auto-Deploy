@@ -19,6 +19,11 @@ Added jest-junit+reports to package.json for frontend to enable test reporting i
 
 
 TODO: Save the new back-end url for later use (the front-end needs it). This could be done with MemStash.io.
-        ?? Workspaces vs memstash.io... why use another service?
+        ?? Workspaces vs memstash.io... why use
+aws ec2 describe-instances --filters "Name=tag-value,Values=backend-deployment-b359765" --query "Reservations[*].Instances[*].[PublicDnsName]" --output text
+
+
+
+
 TODO: New S3 Bucket for front-end.
 TODO: Save the old bucket arn in case you need it later (for rollback). This could be done with MemStash.io.
