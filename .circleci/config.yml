@@ -162,6 +162,6 @@ workflows:
       # - test-frontend
       # - audit-backend-dependencies
       # - audit-frontend-dependencies
-      # - create-infra-backend
-        - create-infra-frontend
+       - create-infra-backend
+      #  - create-infra-frontend
       
