@@ -9,8 +9,7 @@ filter_builds: &filter_builds
   filters:
     branches:
       only:
-        - master
-        - feature
+        - master        
 
 
 orbs:
@@ -155,19 +154,6 @@ jobs:
           command: |
             aws cloudformation describe-stack-events --stack-name "backend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
-
-  verify_url_saved:
-    executor: aws-cli/default
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - run: |          
-          curl -H "Content-Type: text/plain" -H "token: 170176fc-6ea1-4342-8d18-add32ecf9409" --request PUT --data "`cat /tmp/workspace/backend_url.txt`" https://api.memstash.io/values/blarf
-
-
-        
-
-
     
   create-infra-frontend:
     executor: aws-cli/default
@@ -210,10 +196,7 @@ workflows:
           <<: *filter_builds
 
       - create-infra-backend
-          # <<: *filter_builds
-      - verify_url_saved:
-          requires:
-            - create-infra-backend
+          # <<: *filter_builds      
 
       - create-infra-frontend:
           <<: *filter_builds
