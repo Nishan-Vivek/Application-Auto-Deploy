@@ -142,8 +142,13 @@ jobs:
       - run:
           name: save backend instance public url
           command: |
+            mkdir /tmp/workspace
             aws ec2 describe-instances --filters "Name=tag-value,Values=backend-deployment-${CIRCLE_WORKFLOW_ID:0:7}" \
-             --query "Reservations[*].Instances[*].[PublicDnsName]" --output text > backend_url.txt
+             --query "Reservations[*].Instances[*].[PublicDnsName]" --output text > /tmp/workspace/backend_url.txt
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - backend_url.txt
 
       - run:
           name: describe events on failure
@@ -151,6 +156,16 @@ jobs:
             aws cloudformation describe-stack-events --stack-name "backend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
 
+  verify_url_saved:
+    executor: aws-cli/default
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: echo 'cat /tmp/workspace/backend_url.txt'
+        
+
+
+    
   create-infra-frontend:
     executor: aws-cli/default
     steps:
@@ -191,8 +206,9 @@ workflows:
       - audit-frontend-dependencies:
           <<: *filter_builds
 
-      - create-infra-backend:
-          <<: *filter_builds
+      - create-infra-backend
+          # <<: *filter_builds
+      - verify_url_saved
 
       - create-infra-frontend:
           <<: *filter_builds
