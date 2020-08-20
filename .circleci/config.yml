@@ -161,7 +161,7 @@ jobs:
     steps:
       - attach_workspace:
           at: /tmp/workspace
-      - run: echo 'cat /tmp/workspace/backend_url.txt'
+      - run: echo `cat /tmp/workspace/backend_url.txt`
         
 
 
