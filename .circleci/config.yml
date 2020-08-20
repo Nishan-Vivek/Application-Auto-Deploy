@@ -162,7 +162,7 @@ jobs:
       - attach_workspace:
           at: /tmp/workspace
       - run: |          
-          curl -H "Content-Type: text/plain" -H "token: 170176fc-6ea1-4342-8d18-add32ecf9409" --request PUT --data "`cat backend_url.txt`" https://api.memstash.io/values/blarf
+          curl -H "Content-Type: text/plain" -H "token: 170176fc-6ea1-4342-8d18-add32ecf9409" --request PUT --data "`cat /tmp/workspace/backend_url.txt`" https://api.memstash.io/values/blarf
 
 
         
