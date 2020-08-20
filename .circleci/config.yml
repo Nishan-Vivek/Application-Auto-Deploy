@@ -208,7 +208,9 @@ workflows:
 
       - create-infra-backend
           # <<: *filter_builds
-      - verify_url_saved
+      - verify_url_saved:
+          requires:
+            - create-infra-backend
 
       - create-infra-frontend:
           <<: *filter_builds
