@@ -10,9 +10,6 @@ filter_builds: &filter_builds
     branches:
       only:
         - master
-        - feature
-
-
 orbs:
   slack: circleci/slack@3.4.2
   aws-cli: circleci/aws-cli@1.2.1
@@ -142,15 +139,20 @@ jobs:
       - run:
           name: save backend instance public url
           command: |
+            mkdir /tmp/workspace
             aws ec2 describe-instances --filters "Name=tag-value,Values=backend-deployment-${CIRCLE_WORKFLOW_ID:0:7}" \
-             --query "Reservations[*].Instances[*].[PublicDnsName]" --output text > backend_url.txt
+             --query "Reservations[*].Instances[*].[PublicDnsName]" --output text > /tmp/workspace/backend_url.txt
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - backend_url.txt
 
       - run:
           name: describe events on failure
           command: |
             aws cloudformation describe-stack-events --stack-name "backend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
-
+    
   create-infra-frontend:
     executor: aws-cli/default
     steps:
@@ -187,13 +189,13 @@ workflows:
           
       - audit-backend-dependencies:
           <<: *filter_builds
-          
+
       - audit-frontend-dependencies:
           <<: *filter_builds
-          
+
       - create-infra-backend:
-          <<: *filter_builds
-          
+          <<: *filter_builds      
+
       - create-infra-frontend:
           <<: *filter_builds
-          
+

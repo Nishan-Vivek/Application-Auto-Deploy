@@ -72,3 +72,4 @@ frontend/package-lock.json
 local.yml
 backend/junit.xml
 frontend/junit.xml
+backend/package-lock.json
