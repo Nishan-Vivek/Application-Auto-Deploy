@@ -173,27 +173,27 @@ jobs:
 workflows:
   default:    
     jobs:
-      # - build-backend:
-      #     <<: *filter_builds
+      - build-backend:
+          <<: *filter_builds
       
-      # - build-frontend:
-      #     <<: *filter_builds
+      - build-frontend:
+          <<: *filter_builds
 
-      # - test-backend:
-      #     <<: *filter_builds
+      - test-backend:
+          <<: *filter_builds
 
-      # - test-frontend:
-      #     <<: *filter_builds
+      - test-frontend:
+          <<: *filter_builds
           
-      # - audit-backend-dependencies:
-      #     <<: *filter_builds
+      - audit-backend-dependencies:
+          <<: *filter_builds
 
-      # - audit-frontend-dependencies:
-      #     <<: *filter_builds
+      - audit-frontend-dependencies:
+          <<: *filter_builds
 
-      # - create-infra-backend:
-      #     <<: *filter_builds
+      - create-infra-backend:
+          <<: *filter_builds
 
-      # - create-infra-frontend:
-      #     <<: *filter_builds
+      - create-infra-frontend:
+          <<: *filter_builds
 
