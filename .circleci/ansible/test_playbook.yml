@@ -1,0 +1,8 @@
+- hosts: all
+  user: ubuntu
+  tasks:    
+      - name: print my variables
+        debug:
+          msg: "{{ lookup('env','TYPEORM_CONNECTION') }}"
+  environment:
+    TESTVARIABLE: NISHTEST"

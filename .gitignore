@@ -73,3 +73,5 @@ local.yml
 backend/junit.xml
 frontend/junit.xml
 backend/package-lock.json
+backend/package-lock.json
+.circleci/ansible/localvarsetup.sh
