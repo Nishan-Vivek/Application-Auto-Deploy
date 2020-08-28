@@ -2,8 +2,12 @@
 
 ## Current
  - S3 bucks creation and saving of old and current ARNS []
-  - create new s3 bucket []
+  - create new s3 bucket [x]
   - ensure old s3 bucket arn is saved []
+    - previous example did things differently new strat to try
+      - get previous bucket by name []
+      - get previous bucket arn []
+      - save previous bucket arn to workspace []
 ## Done
 
 - Backend infra creation and app deployment [x]
