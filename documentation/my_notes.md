@@ -62,6 +62,14 @@ if using a bashscript to set environment variable for later use eg. `export myva
 calls the script in the context of the calling shell. 
 more info: https://stackoverflow.com/questions/16618071/can-i-export-a-variable-to-the-environment-from-a-bash-script-without-sourcing-i
 
+
+
+## scratch
+
+aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate
+
+
+
 ### the following was added to the original circleci config.yml template, not worth merging
 
 ```yml
