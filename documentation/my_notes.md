@@ -1,7 +1,9 @@
 # Tasks
 
 ## Current
-
+ - S3 bucks creation and saving of old and current ARNS []
+  - create new s3 bucket []
+  - ensure old s3 bucket arn is saved []
 ## Done
 
 - Backend infra creation and app deployment [x]
