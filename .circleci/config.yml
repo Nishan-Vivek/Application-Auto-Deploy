@@ -262,4 +262,7 @@ workflows:
       #       - create-infra-backend
       #       - build-backend
 
-      - testarnsave
+      - testarnsave:
+          requires:
+              - create-infra-frontend
+        
