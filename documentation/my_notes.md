@@ -4,6 +4,14 @@
 
 ## Done
 
+ - S3 bucks creation and saving of old and current ARNS [x]
+    NOTE: Had to change bucket naming convention due to issue with undeletable old S3 buckets
+  - create new s3 bucket [x]
+  - ensure old s3 bucket arn is saved []    
+      - get previous bucket arn []
+          `echo "arn:aws:s3:::`aws s3 ls | awk '{ print $3 } ' | grep udapeople-deployment`" >> old_s3arn.txt`
+      - save previous bucket arn to workspace [x]
+
 - Backend infra creation and app deployment [x]
     - SPin up backend instance. [x]
     - Start creating ansible playbook to run from local as per requirements up till pm2 install. and test from worksation. [x]
@@ -60,6 +68,14 @@ if using a bashscript to set environment variable for later use eg. `export myva
 calls the script in the context of the calling shell. 
 more info: https://stackoverflow.com/questions/16618071/can-i-export-a-variable-to-the-environment-from-a-bash-script-without-sourcing-i
 
+
+
+## scratch
+
+aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate
+
+
+
 ### the following was added to the original circleci config.yml template, not worth merging
 
 ```yml
@@ -115,3 +131,4 @@ workflows:
     jobs:
       - hello-world
 ```
+arn:aws:s3:::udapeople-deployment-5455eb4
