@@ -203,14 +203,14 @@ jobs:
       - run: mkdir /tmp/workspace
       - run:
           name: save old bucket arn
-          command:   echo "arn:aws:s3:::`aws s3 ls | awk '{ print $3 } ' | grep udapeople-deployment`" >> /tmp/workspace/old_s3arn.txt
-      # - run:
-      #     name: Create Infra frontend
-      #     command: |
-      #       aws cloudformation deploy --template-file .circleci/files/frontend.yml \
-      #         --stack-name "frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
-      #         --parameter-overrides ID="deployment-${CIRCLE_WORKFLOW_ID:0:7}" \
-      #         --tags project=udacity
+          command:   echo "arn:aws:s3:::`aws s3 ls | awk '{ print $3 } ' | grep udapeople-frontend-deployment`" > /tmp/workspace/old_s3arn.txt
+      - run:
+          name: Create Infra frontend
+          command: |
+            aws cloudformation deploy --template-file .circleci/files/frontend.yml \
+              --stack-name "frontend-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --parameter-overrides ID="frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}" \
+              --tags project=udacity
       - run:
           name: describe events on failure
           command: |
