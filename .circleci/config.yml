@@ -201,8 +201,6 @@ jobs:
       - aws-cli/setup:
           profile-name: default
       - run: mkdir /tmp/workspace
-      - attach_workspace:
-          at: /tmp/workspace
       - run:
           name: save old bucket arn
           command:   echo "arn:aws:s3:::`aws s3 ls | awk '{ print $3 } ' | grep udapeople-deployment`" >> /tmp/workspace/old_s3arn.txt
