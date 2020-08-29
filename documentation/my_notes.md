@@ -3,10 +3,9 @@
 ## Current
  - S3 bucks creation and saving of old and current ARNS []
   - create new s3 bucket [x]
-  - ensure old s3 bucket arn is saved []
-    - previous example did things differently new strat to try
-      - get previous bucket by name []
+  - ensure old s3 bucket arn is saved []    
       - get previous bucket arn []
+          `echo "arn:aws:s3:::`aws s3 ls | awk '{ print $3 } ' | grep udapeople-deployment`" >> old_s3arn.txt`
       - save previous bucket arn to workspace []
 ## Done
 
@@ -129,3 +128,4 @@ workflows:
     jobs:
       - hello-world
 ```
+arn:aws:s3:::udapeople-deployment-5455eb4
