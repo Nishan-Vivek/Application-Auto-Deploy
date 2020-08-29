@@ -227,7 +227,7 @@ jobs:
       steps: 
         - attach_workspace:
             at: /tmp/workspace
-        - run: echo /tmp/workspace/old_s3arn.txt
+        - run: echo "`cat /tmp/workspace/old_s3arn.txt`"
 
 workflows:
   default:    
