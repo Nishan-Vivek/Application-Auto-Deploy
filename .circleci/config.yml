@@ -200,6 +200,7 @@ jobs:
       - checkout
       - aws-cli/setup:
           profile-name: default
+      - run: mkdir /tmp/workspace
       - attach_workspace:
           at: /tmp/workspace
       - run:
