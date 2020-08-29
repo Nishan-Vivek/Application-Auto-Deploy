@@ -1,13 +1,16 @@
 # Tasks
 
 ## Current
- - S3 bucks creation and saving of old and current ARNS []
+
+## Done
+
+ - S3 bucks creation and saving of old and current ARNS [x]
+    NOTE: Had to change bucket naming convention due to issue with undeletable old S3 buckets
   - create new s3 bucket [x]
   - ensure old s3 bucket arn is saved []    
       - get previous bucket arn []
           `echo "arn:aws:s3:::`aws s3 ls | awk '{ print $3 } ' | grep udapeople-deployment`" >> old_s3arn.txt`
-      - save previous bucket arn to workspace []
-## Done
+      - save previous bucket arn to workspace [x]
 
 - Backend infra creation and app deployment [x]
     - SPin up backend instance. [x]

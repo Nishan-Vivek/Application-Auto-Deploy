@@ -221,14 +221,6 @@ jobs:
           paths:
             - old_s3arn.txt
 
-  testarnsave:
-      docker:
-        - image: alpine:latest
-      steps: 
-        - attach_workspace:
-            at: /tmp/workspace
-        - run: echo "`cat /tmp/workspace/old_s3arn.txt`"
-
 workflows:
   default:    
     jobs:
@@ -253,15 +245,10 @@ workflows:
       # - create-infra-backend
       #       # <<: *filter_builds      
 
-      - create-infra-frontend
+      # - create-infra-frontend:
           # <<: *filter_builds
       
       # - configure-infra-backend:
       #     requires:
       #       - create-infra-backend
       #       - build-backend
-
-      - testarnsave:
-          requires:
-              - create-infra-frontend
-        
