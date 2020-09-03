@@ -179,6 +179,7 @@ jobs:
           name: Migrate DB
           command: |
             mkdir /tmp/workspace
+            cd backend
             npm run migrations > /tmp/workspace/db-migration-log.txt
       - persist_to_workspace:
           root: /tmp/workspace
