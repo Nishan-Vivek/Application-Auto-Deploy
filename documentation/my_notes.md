@@ -2,6 +2,15 @@
 
 ## Current
 
+- Deploy phase []
+  - where in workflow to run database migration
+    - Job to run database migration
+    - save true/false if database mirgration was run
+  - Job to copy build backend files to ec2 backend 
+    - segement from existing job []
+
+
+
 ## Done
 
  - S3 bucks creation and saving of old and current ARNS [x]
@@ -132,3 +141,4 @@ workflows:
       - hello-world
 ```
 arn:aws:s3:::udapeople-deployment-5455eb4
+aws s3api list-buckets --output text | grep udapeople-frontend | awk '{ print $3 }'
