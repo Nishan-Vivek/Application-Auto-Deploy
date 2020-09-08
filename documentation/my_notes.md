@@ -8,10 +8,18 @@
     - save true/false if database mirgration was run [x]
   - Job to copy build backend files to ec2 backend [x]
   - rebuild backend files with api_url job [x]
-    - ensure api url is saved and accesible []
-    - does build []
-    - build files saved []
-  - deploy backend files to new s3 bucket []
+    - ensure api url is saved and accesible [x]
+    - does build [x]
+    - build files saved [x]
+  - deploy backend files to new s3 bucket [x]
+    - copy tar to temp directory [x]
+    - uncompress and verify [x]
+    - add s3 bucket creation to workflow [x]
+    - verify bucket name is saved and usable [x]
+    - copy to s3 bucket [x]
+    - verify bucket public and app visible [x]
+  - verify test-build-deploy jobs together in workflow []
+    - 
 
 
 ## Done
@@ -74,6 +82,8 @@ curl -H "token: 170176fc-6ea1-4342-8d18-add32ecf9409" --request GET https://api.
 
 https://www.mydailytutorials.com/working-with-environment%E2%80%8B-variables-in-ansible/
 https://stackoverflow.com/questions/27733511/how-to-set-linux-environment-variables-with-ansible
+
+circleci working dir `/home/circleci/project/`
 
 ## scripts to set a batch of environment varibles
 if using a bashscript to set environment variable for later use eg. `export myvar=value`. call the script using `.` or `source` eg `. myscript` this 

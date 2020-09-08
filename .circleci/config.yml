@@ -29,8 +29,6 @@ orbs:
   slack: circleci/slack@3.4.2
   aws-cli: circleci/aws-cli@1.2.1
 
-
-
 jobs:
   build-backend:
     docker:
@@ -187,36 +185,26 @@ jobs:
             - db-migration-log.txt
       - slack/notify-on-failure
 
-  verify-db-log-temp:
-    docker:
-      - image: cimg/node:lts
-    steps:
-      - attach_workspace:
-          at: /tmp/workspace
-      - run:
-          name:  check log 
-          command: echo "`cat /tmp/workspace/db-migration-log.txt`" 
-
   deploy-backend:
     docker:
       - image: alpine:latest
     steps:
       - checkout
       - add_ssh_keys:
-            fingerprints: ["	f1:b6:04:ba:fe:3b:33:da:2a:62:24:c1:bf:23:3f:d2"]
+          fingerprints: ["	f1:b6:04:ba:fe:3b:33:da:2a:62:24:c1:bf:23:3f:d2"]
       - attach_workspace:
           at: /tmp/workspace
       - run:
           name: Install Ansible & playbook dependencies
           command: |
-              apk add --update ansible
-              ansible-galaxy install weareinteractive.environment
+            apk add --update ansible
+            ansible-galaxy install weareinteractive.environment
       - run:
           name: Create ansible inventory
           command: |
-              echo "[backend]" > .circleci/ansible/inventory.txt
-              cat /tmp/workspace/backend_url.txt >> .circleci/ansible/inventory.txt
-              echo .circleci/ansible/inventory.txt
+            echo "[backend]" > .circleci/ansible/inventory.txt
+            cat /tmp/workspace/backend_url.txt >> .circleci/ansible/inventory.txt
+            echo .circleci/ansible/inventory.txt
       - run:
           name: run ansible
           command: |
@@ -232,7 +220,7 @@ jobs:
       - run: mkdir /tmp/workspace
       - run:
           name: save old bucket arn
-          command:   echo "arn:aws:s3:::`aws s3 ls | awk '{ print $3 } ' | grep udapeople-frontend-deployment`" > /tmp/workspace/old_s3arn.txt
+          command: echo "arn:aws:s3:::`aws s3 ls | awk '{ print $3 } ' | grep udapeople-frontend-deployment`" > /tmp/workspace/old_s3arn.txt
       - run:
           name: Create Infra frontend
           command: |
@@ -268,23 +256,23 @@ jobs:
             npm run build
       - run:
           name: save front build
-          command: |                        
+          command: |
             cd frontend/dist
             tar -zcvf /tmp/workspace/frontend.tar.gz ./
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
-            - frontend.tar.gz            
-      - slack/notify-on-failure 
+            - frontend.tar.gz
+      - slack/notify-on-failure
 
   deploy-copy-frontend:
     executor: aws-cli/default
-    steps:      
+    steps:
       - aws-cli/setup:
           profile-name: default
       - attach_workspace:
           at: /tmp/workspace
-      - run: 
+      - run:
           name: decompress frontend
           command: |
             echo `ls /tmp/workspace`
@@ -299,48 +287,34 @@ jobs:
             cd ~/frontend
             aws s3 sync . s3://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}
 
-
 workflows:
   default:
     jobs:
       # - build-backend
       #     #  <<: *filter_builds
-
       # - build-frontend:
       #     <<: *filter_builds
-
       # - test-backend:
       #     <<: *filter_builds
-
       # - test-frontend:
       #     <<: *filter_builds
-
       # - audit-backend-dependencies:
       #     <<: *filter_builds
-
       # - audit-frontend-dependencies:
       #     <<: *filter_builds
-
-       - create-infra-backend
-       - create-infra-frontend
-      
-       - deploy-build-frontend:
-          requires: 
-              - create-infra-backend
-
-       - deploy-copy-frontend:
-            requires:
-                - deploy-build-frontend
-                - create-infra-frontend
-
+      #  - create-infra-backend
+      #  - create-infra-frontend
+      #  - deploy-build-frontend:
+      #     requires:
+      #         - create-infra-backend
+      #  - deploy-copy-frontend:
+      #       requires:
+      #           - deploy-build-frontend
+      #           - create-infra-frontend
       # - create-infra-frontend:
-          # <<: *filter_builds
-
+      # <<: *filter_builds
       # - deploy-backend:
       #     requires:
       #       - create-infra-backend
       #       - build-backend
-
       # - migrate-db:
-      
-      
