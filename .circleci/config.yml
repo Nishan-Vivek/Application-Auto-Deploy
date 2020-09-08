@@ -293,6 +293,12 @@ jobs:
             cd ~/frontend
             tar -zxvf frontend.tar.gz
             echo `ls -la`
+      - run:
+          name: deploy to s3 bucket
+          command: |
+            cd ~/frontend
+            aws s3 sync . s3://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}}
+
 
 workflows:
   default:
@@ -316,6 +322,7 @@ workflows:
       #     <<: *filter_builds
 
        - create-infra-backend
+       - create-infra-frontend
       
        - deploy-build-frontend:
           requires: 
@@ -324,6 +331,7 @@ workflows:
        - deploy-copy-frontend:
             requires:
                 - deploy-build-frontend
+                - create-infra-frontend
 
       # - create-infra-frontend:
           # <<: *filter_builds
