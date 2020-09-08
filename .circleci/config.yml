@@ -296,10 +296,10 @@ workflows:
       # - test-frontend
       # - audit-backend-dependencies
       # - audit-frontend-dependencies
-      - create-infra-backend:
-          requires:
+      - create-infra-backend
+          # requires:
           #   - build-frontend
-            - build-backend
+            # - build-backend
           #   - test-frontend
           #   - test-backend
           #   - audit-backend-dependencies
@@ -315,6 +315,7 @@ workflows:
       - deploy-backend:
           requires: 
             - create-infra-backend
+            - build-backend
       - deploy-build-frontend:
           requires:
             - create-infra-backend

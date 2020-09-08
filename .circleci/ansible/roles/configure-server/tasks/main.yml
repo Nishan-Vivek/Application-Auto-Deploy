@@ -29,7 +29,7 @@
     production: yes
     state: present
 
-- name: "create test web folder"
+- name: "create web folder"
   become: yes
   file:
       path: /home/ubuntu/web
@@ -54,12 +54,13 @@
     cd /home/ubuntu/web
     npm i
 
-- name: "configure pm2 start as service"
-  become: yes
-  shell: |
-    env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
+# not using pm2 while troubleshooting backend api
+# - name: "configure pm2 start as service"
+#   become: yes
+#   shell: |
+#     env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
 
-- name: "start backend app with pm2"
-  # become: yes
-  shell: |
-    pm2 start /home/ubuntu/web/main.js -f
+# - name: "start backend app with pm2"
+#   # become: yes
+#   shell: |
+#     pm2 start /home/ubuntu/web/main.js -f
