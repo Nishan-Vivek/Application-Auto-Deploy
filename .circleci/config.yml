@@ -250,7 +250,7 @@ jobs:
       - run:
           name: Build Frontend
           command: |
-            export API_URL=`cat /tmp/workspace/backend_url.txt`
+            export API_URL=http://`cat /tmp/workspace/backend_url.txt`:3030
             cd frontend
             echo `pwd`
             npm run build
