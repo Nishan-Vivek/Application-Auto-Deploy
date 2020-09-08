@@ -21,7 +21,7 @@ commands:
       - run:
           name: Install << parameters.layer >> dependencies
           command: |
-            cd << parameters.layer >> 
+            cd << parameters.layer >>
             npm i
       - slack/notify-on-failure
 
@@ -44,7 +44,7 @@ jobs:
           command: |
             cd backend
             npm run build
-      - run: 
+      - run:
           name: save back end build
           command: |
             mkdir /tmp/workspace
@@ -71,7 +71,7 @@ jobs:
             cd frontend
             npm run build
       - slack/notify-on-failure
-      
+
   test-backend:
     docker:
       - image: cimg/node:lts
@@ -102,7 +102,7 @@ jobs:
           name: Unit Test Frontend
           command: |
             cd frontend
-            mkdir -p ./reports/junit/              
+            mkdir -p ./reports/junit/
             npm run test:report
           environment:
             JEST_JUNIT_OUTPUT_DIR: "./reports/junit/"
@@ -167,8 +167,37 @@ jobs:
           command: |
             aws cloudformation describe-stack-events --stack-name "backend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
-  
-  configure-infra-backend:      
+
+  migrate-db:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - checkout
+      - install-dependencies:
+          layer: "backend"
+      - run:
+          name: Migrate DB
+          command: |
+            mkdir /tmp/workspace
+            cd backend
+            npm run migrations > /tmp/workspace/db-migration-log.txt
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - db-migration-log.txt
+      - slack/notify-on-failure
+
+  verify-db-log-temp:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - run:
+          name:  check log 
+          command: echo "`cat /tmp/workspace/db-migration-log.txt`" 
+
+  configure-infra-backend:
     docker:
       - image: alpine:latest
     steps:
@@ -176,13 +205,13 @@ jobs:
       - add_ssh_keys:
             fingerprints: ["	f1:b6:04:ba:fe:3b:33:da:2a:62:24:c1:bf:23:3f:d2"]
       - attach_workspace:
-          at: /tmp/workspace          
+          at: /tmp/workspace
       - run:
           name: Install Ansible & playbook dependencies
           command: |
               apk add --update ansible
               ansible-galaxy install weareinteractive.environment
-      - run: 
+      - run:
           name: Create ansible inventory
           command: |
               echo "[backend]" > .circleci/ansible/inventory.txt
@@ -193,7 +222,7 @@ jobs:
           command: |
             cd .circleci/ansible/
             ansible-playbook -i inventory.txt playbook.yml
-  
+
   create-infra-frontend:
     executor: aws-cli/default
     steps:
@@ -222,11 +251,11 @@ jobs:
             - old_s3arn.txt
 
 workflows:
-  default:    
+  default:
     jobs:
       # - build-backend
       #     #  <<: *filter_builds
-      
+
       # - build-frontend:
       #     <<: *filter_builds
 
@@ -235,7 +264,7 @@ workflows:
 
       # - test-frontend:
       #     <<: *filter_builds
-          
+
       # - audit-backend-dependencies:
       #     <<: *filter_builds
 
@@ -243,12 +272,17 @@ workflows:
       #     <<: *filter_builds
 
       # - create-infra-backend
-      #       # <<: *filter_builds      
+      #       # <<: *filter_builds
 
       # - create-infra-frontend:
           # <<: *filter_builds
-      
+
       # - configure-infra-backend:
       #     requires:
       #       - create-infra-backend
       #       - build-backend
+
+      - migrate-db
+      - verify-db-log-temp:
+          requires:
+            - migrate-db
