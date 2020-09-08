@@ -264,8 +264,17 @@ jobs:
           command: |
             export API_URL=`cat /tmp/workspace/backend_url.txt`
             cd frontend
-            pwd
+            echo `pwd`
             npm run build
+      - run:
+          name: save front build
+          command: |                        
+            cd frontend/dist
+            tar -zcvf /tmp/workspace/frontend.tar.gz ./
+      - persist_to_workspace:
+          root: /tmp/workspace
+          paths:
+            - frontend.tar.gz            
       - slack/notify-on-failure 
 
 workflows:
