@@ -197,7 +197,7 @@ jobs:
           name:  check log 
           command: echo "`cat /tmp/workspace/db-migration-log.txt`" 
 
-  configure-infra-backend:
+  deploy-backend:
     docker:
       - image: alpine:latest
     steps:
@@ -250,6 +250,22 @@ jobs:
           paths:
             - old_s3arn.txt
 
+  deploy-build-frontend:
+    docker:
+      - image: cimg/node:lts
+    steps:
+      - attach_workspace:
+          at: /tmp/workspace
+      - checkout
+      - install-dependencies:
+          layer: "frontend"
+      - run:
+          name: Build Frontend
+          command: |
+            export API_URL=`cat /tmp/workspace/backend_url.txt`
+            echo $API_URL
+      - slack/notify-on-failure 
+
 workflows:
   default:
     jobs:
@@ -271,18 +287,20 @@ workflows:
       # - audit-frontend-dependencies:
       #     <<: *filter_builds
 
-      # - create-infra-backend
-      #       # <<: *filter_builds
+       - create-infra-backend
+      
+       - deploy-build-frontend:
+          requires: 
+              - create-infra-backend
 
       # - create-infra-frontend:
           # <<: *filter_builds
 
-      # - configure-infra-backend:
+      # - deploy-backend:
       #     requires:
       #       - create-infra-backend
       #       - build-backend
 
-      - migrate-db
-      - verify-db-log-temp:
-          requires:
-            - migrate-db
+      # - migrate-db:
+      
+      
