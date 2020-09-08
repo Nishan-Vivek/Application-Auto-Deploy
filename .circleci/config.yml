@@ -288,6 +288,11 @@ jobs:
           name: decompress frontend
           command: |
             echo `ls /tmp/workspace`
+            mkdir ~/frontend
+            cp /tmp/workspace/frontend.tar.gz ~/frontend
+            cd ~/frontend
+            tar -zxvf frontend.tar.gz
+            echo `ls -la`
 
 workflows:
   default:
