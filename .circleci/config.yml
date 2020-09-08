@@ -290,12 +290,12 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-backend
-      - test-frontend
-      - audit-backend-dependencies
-      - audit-frontend-dependencies
+      # - build-frontend
+      # - build-backend
+      # - test-backend
+      # - test-frontend
+      # - audit-backend-dependencies
+      # - audit-frontend-dependencies
       - create-infra-backend:
           requires:
             - build-frontend
