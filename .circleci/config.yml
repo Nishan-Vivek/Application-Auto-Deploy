@@ -290,31 +290,35 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-backend
-      #     #  <<: *filter_builds
-      # - build-frontend:
-      #     <<: *filter_builds
-      # - test-backend:
-      #     <<: *filter_builds
-      # - test-frontend:
-      #     <<: *filter_builds
-      # - audit-backend-dependencies:
-      #     <<: *filter_builds
-      # - audit-frontend-dependencies:
-      #     <<: *filter_builds
-      #  - create-infra-backend
-      #  - create-infra-frontend
-      #  - deploy-build-frontend:
-      #     requires:
-      #         - create-infra-backend
-      #  - deploy-copy-frontend:
-      #       requires:
-      #           - deploy-build-frontend
-      #           - create-infra-frontend
-      # - create-infra-frontend:
-      # <<: *filter_builds
-      # - deploy-backend:
-      #     requires:
-      #       - create-infra-backend
-      #       - build-backend
-      # - migrate-db:
+      - build-frontend
+      - build-backend
+      - test-backend
+      - test-frontend
+      - audit-backend-dependencies
+      - audit-frontend-dependencies
+      - create-infra-backend:
+          requires:
+            - build-frontend
+            - build-backend
+            - test-frontend
+            - test-backend
+            - audit-backend-dependencies
+            - audit-frontend-dependencies
+      - create-infra-frontend:
+          requires:
+            - build-frontend
+            - build-backend
+            - test-frontend
+            - test-backend
+            - audit-backend-dependencies
+            - audit-frontend-dependencies
+      - deploy-backend:
+          requires: 
+            - create-infra-backend
+      - deploy-build-frontend:
+          requires:
+            - create-infra-backend
+      - deploy-copy-frontend:
+          requires:
+            - deploy-build-frontend
+            - create-infra-frontend

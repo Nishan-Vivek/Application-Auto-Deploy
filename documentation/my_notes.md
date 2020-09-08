@@ -19,7 +19,8 @@
     - copy to s3 bucket [x]
     - verify bucket public and app visible [x]
   - verify test-build-deploy jobs together in workflow []
-    - 
+    - determine order []
+    - link and test []
 
 
 
