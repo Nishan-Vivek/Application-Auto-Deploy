@@ -277,6 +277,18 @@ jobs:
             - frontend.tar.gz            
       - slack/notify-on-failure 
 
+  deploy-copy-frontend:
+    executor: aws-cli/default
+    steps:      
+      - aws-cli/setup:
+          profile-name: default
+      - attach_workspace:
+          at: /tmp/workspace
+      - run: 
+          name: decompress frontend
+          command: |
+            echo `ls /tmp/workspace`
+
 workflows:
   default:
     jobs:
@@ -303,6 +315,10 @@ workflows:
        - deploy-build-frontend:
           requires: 
               - create-infra-backend
+
+       - deploy-copy-frontend:
+            requires:
+                - deploy-build-frontend
 
       # - create-infra-frontend:
           # <<: *filter_builds
