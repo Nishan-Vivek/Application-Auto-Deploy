@@ -263,7 +263,9 @@ jobs:
           name: Build Frontend
           command: |
             export API_URL=`cat /tmp/workspace/backend_url.txt`
-            echo $API_URL
+            cd frontend
+            pwd
+            npm run build
       - slack/notify-on-failure 
 
 workflows:
