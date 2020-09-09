@@ -323,6 +323,9 @@ workflows:
           requires:
             - deploy-build-frontend
             - create-infra-frontend
+      - smokeTest-frontend:
+          requires:
+              - deploy-copy-frontend
             
 
 
