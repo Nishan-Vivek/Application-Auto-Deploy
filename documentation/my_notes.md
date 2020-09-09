@@ -4,9 +4,10 @@
 
 - Smoke test phase []
   - write and test front end smoke job []
-    - test with manual url
+    - test with manual url [x]
     - get url properly
   - write and test back end smoke job []
+    - test manual url [x]
   - capture failed smoke test screen shot from circleci []
 
 
