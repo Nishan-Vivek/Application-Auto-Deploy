@@ -74,4 +74,4 @@
     git clone https://github.com/Nishan-Vivek/Application-Auto-Deploy.git
     cd ./Application-Auto-Deploy/backend
     npm i
-    npm run start
+    npm run start &
