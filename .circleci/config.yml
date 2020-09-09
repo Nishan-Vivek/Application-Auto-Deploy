@@ -331,6 +331,9 @@ workflows:
       - smokeTest-frontend:
           requires:
               - deploy-copy-frontend
+      - smokeTest-backend:
+          requires:
+            - deploy-backend
             
 
 
