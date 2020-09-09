@@ -69,9 +69,10 @@
 
 # work around for backend api issues
 - name: "using source code run workaround"
-  shell: |
-    cd
-    git clone https://github.com/Nishan-Vivek/Application-Auto-Deploy.git
-    cd ./Application-Auto-Deploy/backend
-    npm i
-    npm run start &
+  shell:
+    cmd: |
+      cd /home/ubuntu
+      git clone https://github.com/Nishan-Vivek/Application-Auto-Deploy.git
+      cd ./Application-Auto-Deploy/backend/
+      npm i
+      npm run start &
