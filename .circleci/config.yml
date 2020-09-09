@@ -251,8 +251,7 @@ jobs:
           name: Build Frontend
           command: |
             export API_URL=http://`cat /tmp/workspace/backend_url.txt`:3030
-            cd frontend
-            echo `pwd`
+            cd frontend            
             npm run build
       - run:
           name: save front build
@@ -286,6 +285,31 @@ jobs:
           command: |
             cd ~/frontend
             aws s3 sync . s3://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}
+
+  smokeTest-frontend:
+      docker:
+        - image: alpine:latest
+      steps:
+        - run:
+            name: install curl
+            command: apk add curl
+        - run:
+            name: smoke test front end
+            command: |
+              URL="http://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com/#/employees"              
+              if curl -s ${URL} | grep "Welcome"; then return 0; else return 1 ; fi
+
+  smokeTest-backend:
+      docker:
+          - image: alpine:latest
+      steps:
+          - attach_workspace:
+              at: /tmp/workspace
+          - run: apk add curl
+          - run: 
+              name: smoke test backend
+              command: |
+                curl -m 20 "http://`cat /tmp/workspace/backend_url.txt`:3030/api/status"
 
 workflows:
   default:
@@ -327,3 +351,9 @@ workflows:
             - deploy-build-frontend
             - create-infra-frontend
             - migrate-db
+      - smokeTest-frontend:
+          requires:
+              - deploy-copy-frontend
+      - smokeTest-backend:
+          requires:
+            - deploy-backend
