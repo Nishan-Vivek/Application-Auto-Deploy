@@ -24,8 +24,10 @@
       - test backend wwith built files again [x]
       - test backend with source files again [x]
         - test front with front end [x]
-        - build source workaround into workflow for now []
-        - post on udacity []
+        - build source workaround into workflow for now [x]
+        - post on udacity [x]
+        - test full workground with front end []
+        - try suggestions from udacity
 
 
 
