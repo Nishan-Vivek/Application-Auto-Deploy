@@ -2,7 +2,14 @@
 
 ## Current
 
-- Deploy phase []
+
+
+
+
+## Done
+
+
+- Deploy phase [x]
   - where in workflow to run database migration
     - Job to run database migration [x]
     - save true/false if database mirgration was run [x]
@@ -20,18 +27,15 @@
     - verify bucket public and app visible [x]
   - verify test-build-deploy jobs together in workflow []
     - determine order [x]
-    - link and test []
+    - link and test [x]
       - test backend wwith built files again [x]
       - test backend with source files again [x]
         - test front with front end [x]
         - build source workaround into workflow for now [x]
         - post on udacity [x]
-        - test full workground with front end []
-        - try suggestions from udacity
+        - test full workground with front end [x]
+        - found solution [x]
 
-
-
-## Done
 
  - S3 bucks creation and saving of old and current ARNS [x]
     NOTE: Had to change bucket naming convention due to issue with undeletable old S3 buckets
