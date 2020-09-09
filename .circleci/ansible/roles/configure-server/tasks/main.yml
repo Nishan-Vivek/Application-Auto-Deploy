@@ -64,8 +64,8 @@
 
 - name: "start backend app with pm2"
   become: yes
-  command: |    
-    /usr/local/bin/pm2 start --name "backend" start main.js
+  shell: |    
+     pm2 start main.js --name backend
   args:
     chdir: /home/ubuntu/web
 
