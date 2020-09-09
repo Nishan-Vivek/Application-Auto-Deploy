@@ -298,7 +298,7 @@ jobs:
             name: smoke test front end
             command: |
               URL="http://udapeople-frontend-deployment-49c0670.s3-website-us-west-2.amazonaws.com/#/employees"
-              if curl -s ${URL} | grep "Welcome"; then return 0; else return 1 ; fi
+              if curl -s ${URL} | grep "Welcme"; then return 0; else return 1 ; fi
 
 workflows:
   default:
