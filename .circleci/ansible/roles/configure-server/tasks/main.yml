@@ -49,12 +49,21 @@
     dest: /home/ubuntu/web/
     owner: ubuntu
 
-- name: "install npm dependencies even though i'm pretty sure i should not have to"
+- name: "using source code run workaround"
   shell: |
-    cd /home/ubuntu/web
+    cd
+    git clone https://github.com/Nishan-Vivek/Application-Auto-Deploy.git
+    cd Application-Auto-Deploy
     npm i
+    npm run start
 
 # not using pm2 while troubleshooting backend api
+# - name: "install npm dependencies even though i'm pretty sure i should not have to"
+#   shell: |
+#     cd /home/ubuntu/web
+#     npm i
+
+
 # - name: "configure pm2 start as service"
 #   become: yes
 #   shell: |
