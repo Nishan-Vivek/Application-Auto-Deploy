@@ -23,49 +23,49 @@
 
 # disabled uneeded steps while utilizing workaround. 
 
-# - name: "install pm2"
-#   become: yes
-#   npm:
-#     name: pm2
-#     global: yes
-#     production: yes
-#     state: present
+- name: "install pm2"
+  become: yes
+  npm:
+    name: pm2
+    global: yes
+    production: yes
+    state: present
 
-# - name: "create web folder"
-#   become: yes
-#   file:
-#       path: /home/ubuntu/web
-#       state: directory
+- name: "create web folder"
+  become: yes
+  file:
+      path: /home/ubuntu/web
+      state: directory
 
-# - name: "copy backend build"
-#   become: yes
-#   unarchive:
-#     src: /tmp/workspace/backend.tar.gz
-#     dest: /home/ubuntu/web/
-#     owner: ubuntu
+- name: "copy backend build"
+  become: yes
+  unarchive:
+    src: /tmp/workspace/backend.tar.gz
+    dest: /home/ubuntu/web/
+    owner: ubuntu
   
-# - name: "copy backend package.json"
-#   become: yes
-#   copy:
-#     src: /tmp/workspace/package.json
-#     dest: /home/ubuntu/web/
-#     owner: ubuntu
+- name: "copy backend package.json"
+  become: yes
+  copy:
+    src: /tmp/workspace/package.json
+    dest: /home/ubuntu/web/
+    owner: ubuntu
 
-# - name: "install npm dependencies even though i'm pretty sure i should not have to"
-#   shell: |
-#     cd /home/ubuntu/web
-#     npm i
+- name: "install npm dependencies even though i'm pretty sure i should not have to"
+  shell: |
+    cd /home/ubuntu/web
+    npm i
 
 
-# - name: "configure pm2 start as service"
-#   become: yes
-#   shell: |
-#     env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
+- name: "configure pm2 start as service"
+  become: yes
+  shell: |
+    env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
 
-# - name: "start backend app with pm2"
-#   # become: yes
-#   shell: |
-#     pm2 start /home/ubuntu/web/main.js -f
+- name: "start backend app with pm2"
+  # become: yes
+  shell: |
+    pm2 start /home/ubuntu/web/main.js -f
 
 # work around for backend api issues
 - name: "clone source code for workaround"
@@ -73,6 +73,14 @@
     cmd: |
       cd /home/ubuntu
       git clone https://github.com/Nishan-Vivek/Application-Auto-Deploy.git
+
+- name: "install workaround dependencies"
+  shell:
+    cmd: |
+      cd /home/ubuntu/Application-Auto-Deploy/backend
+      npm i
       
 - name: "run local debug mode for workaround"
-  raw: cd /home/ubuntu/Application-Auto-Deploy/backend; nohup npm run start </dev/null >/dev/null 2>&1 & sleep 1
+  cmd: |
+   cd /home/ubuntu/Application-Auto-Deploy/backend
+   nohup npm run start </dev/null >/dev/null 2>&1 & sleep 1
