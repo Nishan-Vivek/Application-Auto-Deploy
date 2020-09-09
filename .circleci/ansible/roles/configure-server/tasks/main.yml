@@ -68,11 +68,11 @@
 #     pm2 start /home/ubuntu/web/main.js -f
 
 # work around for backend api issues
-- name: "clone source code run workaround"
+- name: "clone source code for workaround"
   shell:
     cmd: |
       cd /home/ubuntu
       git clone https://github.com/Nishan-Vivek/Application-Auto-Deploy.git
       
-- name: "run local debug mode"
-  shell: cd /home/ubuntu/Application-Auto-Deploy/backend; nohup npm run start </dev/null >/dev/null 2>&1 &
+- name: "run local debug mode for workaround"
+  raw: cd /home/ubuntu/Application-Auto-Deploy/backend; nohup npm run start </dev/null >/dev/null 2>&1 & sleep 1
