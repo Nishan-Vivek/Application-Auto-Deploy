@@ -104,6 +104,8 @@ more info: https://stackoverflow.com/questions/16618071/can-i-export-a-variable-
 ## scratch
 
 aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate
+export TYPEORM_ENTITIES=./modules/domain/**/*.entity{.ts,.js}
+
 
 
 #### error when running built backend
