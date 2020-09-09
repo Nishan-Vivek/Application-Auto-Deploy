@@ -81,6 +81,7 @@
       npm i
       
 - name: "run local debug mode for workaround"
-  cmd: |
-   cd /home/ubuntu/Application-Auto-Deploy/backend
-   nohup npm run start </dev/null >/dev/null 2>&1 & sleep 1
+  shell:
+    cmd: |
+      cd /home/ubuntu/Application-Auto-Deploy/backend
+      nohup npm run start </dev/null >/dev/null 2>&1 & sleep 1
