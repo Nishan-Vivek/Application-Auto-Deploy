@@ -21,6 +21,8 @@
     state: latest
     update_cache: yes
 
+# disabled uneeded steps while utilizing workaround. 
+
 - name: "install pm2"
   become: yes
   npm:
@@ -29,7 +31,7 @@
     production: yes
     state: present
 
-- name: "create test web folder"
+- name: "create web folder"
   become: yes
   file:
       path: /home/ubuntu/web
@@ -54,12 +56,34 @@
     cd /home/ubuntu/web
     npm i
 
+
 - name: "configure pm2 start as service"
   become: yes
   shell: |
     env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
 
 - name: "start backend app with pm2"
-  # become: yes
-  shell: |
-    pm2 start /home/ubuntu/web/main.js -f
+  become: yes
+  shell: |    
+     pm2 start main.js --name backend
+  args:
+    chdir: /home/ubuntu/web
+
+# work around for backend api issues
+# - name: "clone source code for workaround"
+#   shell:
+#     cmd: |
+#       cd /home/ubuntu
+#       git clone https://github.com/Nishan-Vivek/Application-Auto-Deploy.git
+
+# - name: "install workaround dependencies"
+#   shell:
+#     cmd: |
+#       cd /home/ubuntu/Application-Auto-Deploy/backend
+#       npm i
+      
+# - name: "run local debug mode for workaround"
+#   shell:
+#     cmd: |
+#       cd /home/ubuntu/Application-Auto-Deploy/backend
+#       nohup npm run start </dev/null >/dev/null 2>&1 & sleep 1
