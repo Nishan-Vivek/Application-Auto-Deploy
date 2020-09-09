@@ -178,7 +178,7 @@ jobs:
           command: |
             mkdir /tmp/workspace
             cd backend
-            npm run migrations > /tmp/workspace/db-migration-log.txt
+            npm run migrations | tee /tmp/workspace/db-migration-log.txt
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
