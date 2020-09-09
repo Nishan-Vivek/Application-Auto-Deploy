@@ -287,43 +287,62 @@ jobs:
             cd ~/frontend
             aws s3 sync . s3://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}
 
+  smokeTest-frontend:
+      docker:
+        - image: alpine:latest
+      steps:
+        - run:
+            name: install curl
+            command: apk add curl
+        - run:
+            name: smoke test front end
+            command: |
+              URL="http://udapeople-frontend-deployment-49c0670.s3-website-us-west-2.amazonaws.com/#/employees"
+              if curl -s ${URL} | grep "Employees"
+              then
+              return 1
+              else
+              return 0
+              fi
+
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-backend
-      - test-frontend
-      - audit-backend-dependencies
-      - audit-frontend-dependencies
-      - create-infra-backend:
-          requires:
-            - build-frontend
-            - build-backend
-            - test-frontend
-            - test-backend
-            - audit-backend-dependencies
-            - audit-frontend-dependencies
-      - create-infra-frontend:
-          requires:
-            - build-frontend
-            - build-backend
-            - test-frontend
-            - test-backend
-            - audit-backend-dependencies
-            - audit-frontend-dependencies
-      - deploy-backend:
-          requires: 
-            - create-infra-backend
-            - build-backend
-      - migrate-db:
-          requires:
-            - deploy-backend
-      - deploy-build-frontend:
-          requires:
-            - create-infra-backend
-      - deploy-copy-frontend:
-          requires:
-            - deploy-build-frontend
-            - create-infra-frontend
-            - migrate-db
+        - smokeTest-frontend
+      # - build-frontend
+      # - build-backend
+      # - test-backend
+      # - test-frontend
+      # - audit-backend-dependencies
+      # - audit-frontend-dependencies
+      # - create-infra-backend:
+      #     requires:
+      #       - build-frontend
+      #       - build-backend
+      #       - test-frontend
+      #       - test-backend
+      #       - audit-backend-dependencies
+      #       - audit-frontend-dependencies
+      # - create-infra-frontend:
+      #     requires:
+      #       - build-frontend
+      #       - build-backend
+      #       - test-frontend
+      #       - test-backend
+      #       - audit-backend-dependencies
+      #       - audit-frontend-dependencies
+      # - deploy-backend:
+      #     requires: 
+      #       - create-infra-backend
+      #       - build-backend
+      # - migrate-db:
+      #     requires:
+      #       - deploy-backend
+      # - deploy-build-frontend:
+      #     requires:
+      #       - create-infra-backend
+      # - deploy-copy-frontend:
+      #     requires:
+      #       - deploy-build-frontend
+      #       - create-infra-frontend
+      #       - migrate-db
