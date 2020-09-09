@@ -297,7 +297,7 @@ jobs:
         - run:
             name: smoke test front end
             command: |
-              URL="http://udapeople-frontend-deployment-49c0670.s3-website-us-west-2.amazonaws.com/#/employees"
+              URL="http://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com/#/employees"              
               if curl -s ${URL} | grep "Welcme"; then return 0; else return 1 ; fi
 
   smokeTest-backend:
@@ -313,8 +313,20 @@ jobs:
 workflows:
   default:
     jobs:
-        - smokeTest-frontend
-        - smokeTest-backend
+      
+      - create-infra-backend
+      - create-infra-frontend
+      - deploy-build-frontend:
+          requires:
+            - create-infra-backend
+      - deploy-copy-frontend:
+          requires:
+            - deploy-build-frontend
+            - create-infra-frontend
+            
+
+
+
       # - build-frontend
       # - build-backend
       # - test-backend
