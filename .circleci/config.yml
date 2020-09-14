@@ -46,6 +46,10 @@ commands:
               command: |
                 aws cloudformation delete-stack --stack-name backend-<< parameters.workflow >>
               when: on_fail
+          - run: 
+              name: roll back migrations if run
+              command: |
+                if grep -F "has been executed successfully." /tmp/workspace/db-migration-log.txt; then npm run migrations:revert; else echo "no migrations to revert"; fi
           - slack/notify-on-failure
           
 
@@ -313,22 +317,23 @@ jobs:
   smokeTest-frontend:
       executor: aws-cli/default
       steps:
+        - checkout
         - aws-cli/setup:
             profile-name: default
-        # - run:
-        #     name: install curl
-        #     command: apk add curl
+        - attach_workspace:
+            at: /tmp/workspace
         - run:
             name: smoke test front end
             command: |
               URL="http://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com/#/employees"              
-              if curl -s ${URL} | grep "Welcome"; then exit 0; else exit 1 ; fi
+              if curl -s ${URL} | grep "Wecome"; then exit 0; else exit 1 ; fi
         - roll-back-onfail:
             workflow: ${CIRCLE_WORKFLOW_ID:0:7}                
 
   smokeTest-backend:
       executor: aws-cli/default
       steps:
+        - checkout
         - aws-cli/setup:
             profile-name: default
         - attach_workspace:
@@ -370,9 +375,9 @@ workflows:
           requires: 
             - create-infra-backend
             - build-backend
-      # - migrate-db:
-      #     requires:
-      #       - deploy-backend
+      - migrate-db:
+          requires:
+            - deploy-backend
       - deploy-build-frontend:
           requires:
             - create-infra-backend
@@ -380,7 +385,7 @@ workflows:
           requires:
             - deploy-build-frontend
             - create-infra-frontend
-            # - migrate-db
+            - migrate-db
       - smokeTest-frontend:
           requires:
               - deploy-copy-frontend
