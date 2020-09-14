@@ -337,8 +337,8 @@ jobs:
             name: smoke test backend
             command: |
               curl -m 20 "http://`cat /tmp/workspace/backend_url.txt`:3030/api/status"
-        # - roll-back-onfail:
-        #     workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+        - roll-back-onfail:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
           
 
 workflows:
