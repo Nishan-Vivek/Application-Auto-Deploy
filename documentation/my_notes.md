@@ -2,17 +2,31 @@
 
 ## Current
 
-- Smoke test phase []
-  - write and test front end smoke job []
-    - test with manual url [x]
-    - get url properly
-  - write and test back end smoke job []
-    - test manual url [x]
-  - capture failed smoke test screen shot from circleci []
+
+- capture failed smoke test screen shot from circleci [SCREENSHOT6]
+
+- rollback phase []
+  - front end roll back []
+    - empty s3 bucket []
+    - delete front end stack []
+  - back end roll back []
+    - delete stack []
+    - roll back migrations
+      - how to tell if migration was run []
+      - how to roll back migration [] 
+  Provide a screenshot for a successful rollback after a failed smoke test. [SCREENSHOT07]
 
 
 
 ## Done
+
+- Smoke test phase [x]
+  - write and test front end smoke job [x]
+    - test with manual url [x]
+    - get url properly
+  - write and test back end smoke job [x]
+    - test manual url [x]
+
 
 - Deploy phase [x]
   - where in workflow to run database migration
