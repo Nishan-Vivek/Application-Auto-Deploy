@@ -25,6 +25,19 @@ commands:
             npm i
       - slack/notify-on-failure
 
+  roll-back-onfail:
+      description: Roll back changes on smoketest or deployment fail. 
+      parameters:
+        workflow:
+            type: string
+      steps:
+          - run:
+              name: Empty S3 bucket
+              command: |
+                aws s3 rm s3://udapeople-frontend-deployment-<< parameters.workflow >> --recursive
+          - slack/notify-on-failure
+          
+
 orbs:
   slack: circleci/slack@3.4.2
   aws-cli: circleci/aws-cli@1.2.1
@@ -310,39 +323,42 @@ jobs:
               name: smoke test backend
               command: |
                 curl -m 20 "http://`cat /tmp/workspace/backend_url.txt`:3030/api/status"
+          - roll-back-onfail:
+              workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+              when: onfail
 
 workflows:
   default:
     jobs:
-      - build-frontend
-      - build-backend
-      - test-backend
-      - test-frontend
-      - audit-backend-dependencies
-      - audit-frontend-dependencies
-      - create-infra-backend:
-          requires:
-            - build-frontend
-            - build-backend
-            - test-frontend
-            - test-backend
-            - audit-backend-dependencies
-            - audit-frontend-dependencies
-      - create-infra-frontend:
-          requires:
-            - build-frontend
-            - build-backend
-            - test-frontend
-            - test-backend
-            - audit-backend-dependencies
-            - audit-frontend-dependencies
-      - deploy-backend:
-          requires: 
-            - create-infra-backend
-            - build-backend
-      - migrate-db:
-          requires:
-            - deploy-backend
+      # - build-frontend
+      # - build-backend
+      # - test-backend
+      # - test-frontend
+      # - audit-backend-dependencies
+      # - audit-frontend-dependencies
+      - create-infra-backend
+          # requires:
+          #   - build-frontend
+          #   - build-backend
+          #   - test-frontend
+          #   - test-backend
+          #   - audit-backend-dependencies
+          #   - audit-frontend-dependencies
+      - create-infra-frontend
+          # requires:
+          #   - build-frontend
+          #   - build-backend
+          #   - test-frontend
+          #   - test-backend
+          #   - audit-backend-dependencies
+          #   - audit-frontend-dependencies
+      # - deploy-backend:
+      #     requires: 
+      #       - create-infra-backend
+      #       - build-backend
+      # - migrate-db:
+      #     requires:
+      #       - deploy-backend
       - deploy-build-frontend:
           requires:
             - create-infra-backend
@@ -350,10 +366,10 @@ workflows:
           requires:
             - deploy-build-frontend
             - create-infra-frontend
-            - migrate-db
+            # - migrate-db
       - smokeTest-frontend:
           requires:
               - deploy-copy-frontend
-      - smokeTest-backend:
-          requires:
-            - deploy-backend
+      # - smokeTest-backend:
+      #     requires:
+      #       - deploy-backend
