@@ -23,7 +23,7 @@ commands:
           command: |
             cd << parameters.layer >>
             npm i
-      - slack/notify-on-failure
+      # - slack/notify-on-failure
 
   roll-back-onfail:
       description: Roll back stacks
@@ -200,8 +200,8 @@ jobs:
       - image: cimg/node:lts
     steps:
       - checkout
-      - install-dependencies:
-          layer: "backend"
+      # - install-dependencies:
+      #     layer: "backend"
       - run:
           name: Migrate DB
           command: |
@@ -350,28 +350,28 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend
+      - build-frontend
       - build-backend
-      # - test-backend
-      # - test-frontend
-      # - audit-backend-dependencies
-      # - audit-frontend-dependencies
-      - create-infra-backend
-          # requires:
-          #   - build-frontend
-          #   - build-backend
-          #   - test-frontend
-          #   - test-backend
-          #   - audit-backend-dependencies
-          #   - audit-frontend-dependencies
-      - create-infra-frontend
-          # requires:
-          #   - build-frontend
-          #   - build-backend
-          #   - test-frontend
-          #   - test-backend
-          #   - audit-backend-dependencies
-          #   - audit-frontend-dependencies
+      - test-backend
+      - test-frontend
+      - audit-backend-dependencies
+      - audit-frontend-dependencies
+      - create-infra-backend:
+          requires:
+            - build-frontend
+            - build-backend
+            - test-frontend
+            - test-backend
+            - audit-backend-dependencies
+            - audit-frontend-dependencies
+      - create-infra-frontend:
+          requires:
+            - build-frontend
+            - build-backend
+            - test-frontend
+            - test-backend
+            - audit-backend-dependencies
+            - audit-frontend-dependencies
       - deploy-backend:
           requires: 
             - create-infra-backend
@@ -385,12 +385,13 @@ workflows:
       - deploy-copy-frontend:
           requires:
             - deploy-build-frontend
-            - create-infra-frontend
-            - migrate-db
-      - smokeTest-frontend:
-          requires:
-              - deploy-copy-frontend
+            - create-infra-frontend           
       - smokeTest-backend:
           requires:
             - deploy-backend
             - migrate-db
+      - smokeTest-frontend:
+          requires:
+              - deploy-copy-frontend
+              - smokeTest-backend
+              - migrate-db
