@@ -330,7 +330,9 @@ jobs:
       executor: aws-cli/default
       steps:
         - aws-cli/setup:
-            profile-name: default               
+            profile-name: default
+        - attach_workspace:
+            at: /tmp/workspace               
         - run: 
             name: smoke test backend
             command: |
