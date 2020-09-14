@@ -1,6 +1,11 @@
-# Tasks
+# scratch
+udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}
+if curl -s ${URL} | grep "Wecome"; then return 0; else return 1 ; fi
+aws cloudformation deploy --template-file cloudfront.yml --stack-name udapeople-cloudfront --parameter-overrides WorkflowID="frontend-deployment-nishanstarter"
 
-## Current
+if grep -F "has been executed successfully." ./output.txt; then echo "true"; else echo "false"; fi
+
+# Tasks
 
 
 - capture failed smoke test screen shot from circleci [SCREENSHOT6]
