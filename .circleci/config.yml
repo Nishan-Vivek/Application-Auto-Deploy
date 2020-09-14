@@ -35,6 +35,7 @@ commands:
               name: Empty S3 bucket
               command: |
                 aws s3 rm s3://udapeople-frontend-deployment-<< parameters.workflow >> --recursive
+              when: on_fail
           - slack/notify-on-failure
           
 
@@ -314,7 +315,7 @@ jobs:
               if curl -s ${URL} | grep "Wecome"; then return 0; else return 1 ; fi
         - roll-back-onfail:
             workflow: ${CIRCLE_WORKFLOW_ID:0:7}
-            when: on_fail
+        
 
   smokeTest-backend:
       docker:
