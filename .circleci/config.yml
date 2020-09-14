@@ -300,17 +300,21 @@ jobs:
             aws s3 sync . s3://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}
 
   smokeTest-frontend:
-      docker:
-        - image: alpine:latest
+      executor: aws-cli/default
       steps:
-        - run:
-            name: install curl
-            command: apk add curl
+        - aws-cli/setup:
+            profile-name: default
+        # - run:
+        #     name: install curl
+        #     command: apk add curl
         - run:
             name: smoke test front end
             command: |
               URL="http://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com/#/employees"              
               if curl -s ${URL} | grep "Welcome"; then return 0; else return 1 ; fi
+        - roll-back-onfail:
+              workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+              when: onfail
 
   smokeTest-backend:
       docker:
@@ -323,9 +327,7 @@ jobs:
               name: smoke test backend
               command: |
                 curl -m 20 "http://`cat /tmp/workspace/backend_url.txt`:3030/api/status"
-          - roll-back-onfail:
-              workflow: ${CIRCLE_WORKFLOW_ID:0:7}
-              when: onfail
+          
 
 workflows:
   default:
