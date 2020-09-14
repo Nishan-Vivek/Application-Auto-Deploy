@@ -26,7 +26,7 @@ commands:
       - slack/notify-on-failure
 
   roll-back-onfail:
-      description: Roll back changes on smoketest or deployment fail. 
+      description: Roll back stacks
       parameters:
         workflow:
             type: string
@@ -40,6 +40,11 @@ commands:
               name: delete frontend stack
               command: |
                 aws cloudformation delete-stack --stack-name frontend-<< parameters.workflow >>
+              when: on_fail
+          - run: 
+              name: delete backend stack
+              command: |
+                aws cloudformation delete-stack --stack-name backend-<< parameters.workflow >>
               when: on_fail
           - slack/notify-on-failure
           
@@ -317,30 +322,30 @@ jobs:
             name: smoke test front end
             command: |
               URL="http://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com/#/employees"              
-              if curl -s ${URL} | grep "Welome"; then exit 0; else exit 1 ; fi
+              if curl -s ${URL} | grep "Welcome"; then exit 0; else exit 1 ; fi
         - roll-back-onfail:
-            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
-        
-        
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}                
 
   smokeTest-backend:
-      docker:
-          - image: alpine:latest
+      executor: aws-cli/default
       steps:
-          - attach_workspace:
-              at: /tmp/workspace
-          - run: apk add curl
-          - run: 
-              name: smoke test backend
-              command: |
-                curl -m 20 "http://`cat /tmp/workspace/backend_url.txt`:3030/api/status"
+        - aws-cli/setup:
+            profile-name: default      
+        - attach_workspace:
+            at: /tmp/workspace        
+        - run: 
+            name: smoke test backend
+            command: |
+              curl -m 20 "http://`cat /tmp/workspace/backend_url.txt`:3031/api/status"
+        - roll-back-onfail:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
           
 
 workflows:
   default:
     jobs:
       # - build-frontend
-      # - build-backend
+      - build-backend
       # - test-backend
       # - test-frontend
       # - audit-backend-dependencies
@@ -361,13 +366,13 @@ workflows:
           #   - test-backend
           #   - audit-backend-dependencies
           #   - audit-frontend-dependencies
-      # - deploy-backend:
-      #     requires: 
-      #       - create-infra-backend
-      #       - build-backend
-      # - migrate-db:
-      #     requires:
-      #       - deploy-backend
+      - deploy-backend:
+          requires: 
+            - create-infra-backend
+            - build-backend
+      - migrate-db:
+          requires:
+            - deploy-backend
       - deploy-build-frontend:
           requires:
             - create-infra-backend
@@ -379,6 +384,6 @@ workflows:
       - smokeTest-frontend:
           requires:
               - deploy-copy-frontend
-      # - smokeTest-backend:
-      #     requires:
-      #       - deploy-backend
+      - smokeTest-backend:
+          requires:
+            - deploy-backend
