@@ -200,8 +200,8 @@ jobs:
       - image: cimg/node:lts
     steps:
       - checkout
-      # - install-dependencies:
-      #     layer: "backend"
+      - install-dependencies:
+          layer: "backend"
       - run:
           name: Migrate DB
           command: |
