@@ -311,10 +311,10 @@ jobs:
             name: smoke test front end
             command: |
               URL="http://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com/#/employees"              
-              if curl -s ${URL} | grep "Welcome"; then return 0; else return 1 ; fi
+              if curl -s ${URL} | grep "Wecome"; then return 0; else return 1 ; fi
         - roll-back-onfail:
-              workflow: ${CIRCLE_WORKFLOW_ID:0:7}
-              when: onfail
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
 
   smokeTest-backend:
       docker:
