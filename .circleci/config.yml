@@ -49,7 +49,7 @@ commands:
           - run: 
               name: roll back migrations if run
               command: |
-                if grep -F "has been executed successfully." /tmp/workspace/db-migration-log.txt; then npm run migrations:revert; else echo "no migrations to revert"; fi
+                if grep -F "has been executed successfully." /tmp/workspace/db-migration-log.txt; then cd /home/circleci/project/backend; npm i; npm run migrations:revert; else echo "no migrations to revert"; fi
               when: on_fail
           - slack/notify-on-failure
           
