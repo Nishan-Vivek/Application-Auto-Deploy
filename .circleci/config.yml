@@ -25,7 +25,7 @@ commands:
             npm i
 
   # requires calling job to be run in aws-cli executor with aws-cli default profile an code checked out
-  roll-back:
+  delete-environments:
       description: Roll back stacks
       parameters:
         workflow:
@@ -47,13 +47,20 @@ commands:
               name: delete backend stack
               command: |
                 aws cloudformation delete-stack --stack-name backend-<< parameters.workflow >>
-              when: << parameters.when >>
-          - run: 
-              name: roll back migrations if run
-              command: |
-                if grep -F "has been executed successfully." /tmp/workspace/db-migration-log.txt; then cd /home/circleci/project/backend; npm i; npm run migrations:revert; else echo "no migrations to revert"; fi
-              when: << parameters.when >>
+              when: << parameters.when >>          
           - slack/notify-on-failure
+
+  revert-migrations:
+    description: revert db migrations if they occured
+    parameters:
+      when:
+        type: string
+    steps:
+      - run: 
+          name: roll back migrations if run
+          command: |
+            if grep -F "has been executed successfully." /tmp/workspace/db-migration-log.txt; then cd /home/circleci/project/backend; npm i; npm run migrations:revert; else echo "no migrations to revert"; fi
+          when: << parameters.when >>
 
 
 orbs:
@@ -251,7 +258,7 @@ jobs:
       - run: mkdir /tmp/workspace
       - run:
           name: save old bucket arn
-          command: echo "arn:aws:s3:::`aws s3 ls | awk '{ print $3 } ' | grep udapeople-frontend-deployment`" > /tmp/workspace/old_s3arn.txt
+          command: aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --query "StackSummaries[].[StackName]" --output text | grep backend | awk -F- '{print $2}' > /tmp/workspace/old_workflow.txt
       - run:
           name: Create Infra frontend
           command: |
@@ -267,7 +274,7 @@ jobs:
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
-            - old_s3arn.txt
+            - old_workflow.txt
 
   deploy-build-frontend:
     docker:
@@ -330,8 +337,10 @@ jobs:
             command: |
               URL="http://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com/#/employees"              
               if curl -s ${URL} | grep "Welcome"; then exit 0; else exit 1 ; fi
-        - roll-back:
+        - delete-environments:
             workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+        - revert-migrations:
             when: on_fail                
 
   smokeTest-backend:
@@ -346,8 +355,10 @@ jobs:
             name: smoke test backend
             command: |
               curl -m 20 "http://`cat /tmp/workspace/backend_url.txt`:3030/api/status"
-        - roll-back:
+        - delete-environments:
             workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+        - revert-migrations:
             when: on_fail
           
   promote-new-build:
@@ -361,9 +372,31 @@ jobs:
         - run: 
             name: promote new build in cloudfront
             command: |
-              aws cloudformation deploy --template-file /home/circleci/project/.circleci/files/cloudfront.yml --stack-name udapeople-cloudfront --parameter-overrides WorkflowID="udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}"
+              aws cloudformation deploy --template-file /home/circleci/project/.circleci/files/cloudfront.yml --stack-name udapeople-cloudfront --parameter-overrides WorkflowID="frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}"
         - slack/notify-on-failure
-        
+
+  delete-old-environment:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup:
+          profile-name: default
+      - attach_workspace:
+          at: /tmp/workspace     
+      - run:
+          name: Empty S3 bucket
+          command: |
+            aws s3 rm s3://udapeople-frontend-deployment-`cat /tmp/workspace/old_workflow.txt` --recursive         
+      - run: 
+          name: delete frontend stack
+          command: |
+            aws cloudformation delete-stack --stack-name frontend-`cat /tmp/workspace/old_workflow.txt`        
+      - run: 
+          name: delete backend stack
+          command: |
+            aws cloudformation delete-stack --stack-name backend-`cat /tmp/workspace/old_workflow.txt`                   
+      - slack/notify-on-failure 
+
 workflows:
   default:
     jobs:
@@ -416,3 +449,6 @@ workflows:
           requires:
               - smokeTest-backend
               - smokeTest-frontend
+      - delete-old-environment:
+          requires:
+            - promote-new-build

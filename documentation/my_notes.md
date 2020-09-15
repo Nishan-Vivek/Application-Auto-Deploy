@@ -1,4 +1,5 @@
 # scratch
+aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --query "StackSummaries[].[StackName]" --output text | grep backend | awk -F- '{print $2}'
 udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}
 if curl -s ${URL} | grep "Wecome"; then return 0; else return 1 ; fi
 aws cloudformation deploy --template-file cloudfront.yml --stack-name udapeople-cloudfront --parameter-overrides WorkflowID="frontend-deployment-nishanstarter"
@@ -7,23 +8,33 @@ if grep -F "has been executed successfully." ./output.txt; then echo "true"; els
 
 # Tasks
 
+- DEBUG why cloudfront cannot view or save employees even though it was switched []
 
-- capture failed smoke test screen shot from circleci [SCREENSHOT6]
+ - promote phase []
+  - setup initial cloudfront and bucket [x]
+  - promote job after passing smoke tests that redirects cloudfront to new bucket [x]
+  - break out migration:revert from rollback. rename rollback to evironment destroy []
 
-- rollback phase []
-  - front end roll back []
-    - empty s3 bucket []
-    - delete front end stack []
-  - back end roll back []
-    - delete stack []
-    - roll back migrations
-      - how to tell if migration was run []
-      - how to roll back migration [] 
-  Provide a screenshot for a successful rollback after a failed smoke test. [SCREENSHOT07]
+
 
 
 
 ## Done
+
+- test migration revert with forced true [x]
+- capture failed smoke test screen shot from circleci [SCREENSHOT6]
+
+- rollback phase [x]
+  - front end roll back [x]
+    - empty s3 bucket [x]
+    - delete front end stack [x]
+  - back end roll back [x]
+    - delete stack [x]
+    - roll back migrations
+      - how to tell if migration was run [x]
+      - how to roll back migration [x] 
+  Provide a screenshot for a successful rollback after a failed smoke test. [SCREENSHOT07]
+
 
 - Smoke test phase [x]
   - write and test front end smoke job [x]
@@ -100,7 +111,7 @@ Added jest-junit+reports to package.json for frontend to enable test reporting i
 ## branches and builds
 Limited builds to master and feature branch. 
 
-## misc
+## old scratch
 aws ec2 describe-instances --filters "Name=tag-value,Values=backend-deployment-b359765" --query "Reservations[*].Instances[*].[PublicDnsName]" --output text
           
           curl -H "Content-Type: text/plain" -H "token: 170176fc-6ea1-4342-8d18-add32ecf9409" --request PUT --data "`cat /tmp/workspace/backend_url.txt`" https://api.memstash.io/values/blarf
@@ -112,16 +123,15 @@ https://stackoverflow.com/questions/27733511/how-to-set-linux-environment-variab
 
 circleci working dir `/home/circleci/project/`
 
+aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate
+
+arn:aws:s3:::udapeople-deployment-5455eb4
+aws s3api list-buckets --output text | grep udapeople-frontend | awk '{ print $3 }'
+
 ## scripts to set a batch of environment varibles
 if using a bashscript to set environment variable for later use eg. `export myvar=value`. call the script using `.` or `source` eg `. myscript` this 
 calls the script in the context of the calling shell. 
 more info: https://stackoverflow.com/questions/16618071/can-i-export-a-variable-to-the-environment-from-a-bash-script-without-sourcing-i
-
-
-
-## scratch
-
-aws cloudformation list-exports --query "Exports[?Name==\`PipelineID\`].Value" --no-paginate
 
 ## example dbmigration log output
 
@@ -240,5 +250,3 @@ workflows:
     jobs:
       - hello-world
 ```
-arn:aws:s3:::udapeople-deployment-5455eb4
-aws s3api list-buckets --output text | grep udapeople-frontend | awk '{ print $3 }'
