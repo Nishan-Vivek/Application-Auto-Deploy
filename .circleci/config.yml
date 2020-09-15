@@ -350,48 +350,48 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
+      # - build-frontend
       - build-backend
-      - test-backend
-      - test-frontend
-      - audit-backend-dependencies
-      - audit-frontend-dependencies
-      - create-infra-backend:
-          requires:
-            - build-frontend
-            - build-backend
-            - test-frontend
-            - test-backend
-            - audit-backend-dependencies
-            - audit-frontend-dependencies
-      - create-infra-frontend:
-          requires:
-            - build-frontend
-            - build-backend
-            - test-frontend
-            - test-backend
-            - audit-backend-dependencies
-            - audit-frontend-dependencies
+      # - test-backend
+      # - test-frontend
+      # - audit-backend-dependencies
+      # - audit-frontend-dependencies
+      - create-infra-backend
+          # requires:
+          #   - build-frontend
+          #   - build-backend
+          #   - test-frontend
+          #   - test-backend
+          #   - audit-backend-dependencies
+          #   - audit-frontend-dependencies
+      # - create-infra-frontend:
+      #     requires:
+      #       - build-frontend
+      #       - build-backend
+      #       - test-frontend
+      #       - test-backend
+      #       - audit-backend-dependencies
+      #       - audit-frontend-dependencies
       - deploy-backend:
           requires: 
             - create-infra-backend
             - build-backend
-      - migrate-db:
-          requires:
-            - deploy-backend
-      - deploy-build-frontend:
-          requires:
-            - create-infra-backend
-      - deploy-copy-frontend:
-          requires:
-            - deploy-build-frontend
-            - create-infra-frontend           
-      - smokeTest-backend:
-          requires:
-            - deploy-backend
-            - migrate-db
-      - smokeTest-frontend:
-          requires:
-              - deploy-copy-frontend
-              - smokeTest-backend
-              - migrate-db
+      # - migrate-db:
+      #     requires:
+      #       - deploy-backend
+      # - deploy-build-frontend:
+      #     requires:
+      #       - create-infra-backend
+      # - deploy-copy-frontend:
+      #     requires:
+      #       - deploy-build-frontend
+      #       - create-infra-frontend           
+      # - smokeTest-backend:
+      #     requires:
+      #       - deploy-backend
+      #       - migrate-db
+      # - smokeTest-frontend:
+      #     requires:
+      #         - deploy-copy-frontend
+      #         - smokeTest-backend
+      #         - migrate-db
