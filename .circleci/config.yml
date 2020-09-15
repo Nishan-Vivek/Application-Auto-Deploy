@@ -23,8 +23,8 @@ commands:
           command: |
             cd << parameters.layer >>
             npm i
-      # - slack/notify-on-failure
 
+  # requires calling job to be run in aws-cli executor with aws-cli default profile an code checked out
   roll-back-onfail:
       description: Roll back stacks
       parameters:
@@ -49,10 +49,11 @@ commands:
           - run: 
               name: roll back migrations if run
               command: |
-                if grep -F "has been executed successfully." /tmp/workspace/db-migration-log.txt; then cd /home/circleci/project/backend; npm i; npm run migrations:revert; else echo "no migrations to revert"; fi
+                    if true; then cd /home/circleci/project/backend; npm i; npm run migrations:revert; else echo "no migrations to revert"; fi
               when: on_fail
           - slack/notify-on-failure
-          
+                          # if grep -F "has been executed successfully." /tmp/workspace/db-migration-log.txt; then cd /home/circleci/project/backend; npm i; npm run migrations:revert; else echo "no migrations to revert"; fi
+
 
 orbs:
   slack: circleci/slack@3.4.2
@@ -342,7 +343,7 @@ jobs:
         - run: 
             name: smoke test backend
             command: |
-              curl -m 20 "http://`cat /tmp/workspace/backend_url.txt`:3030/api/status"
+              curl -m 20 "http://`cat /tmp/workspace/backend_url.txt`:3031/api/status"
         - roll-back-onfail:
             workflow: ${CIRCLE_WORKFLOW_ID:0:7}
           
@@ -376,9 +377,9 @@ workflows:
           requires: 
             - create-infra-backend
             - build-backend
-      # - migrate-db:
-      #     requires:
-      #       - deploy-backend
+      - migrate-db:
+          requires:
+            - deploy-backend
       # - deploy-build-frontend:
       #     requires:
       #       - create-infra-backend
@@ -386,10 +387,10 @@ workflows:
       #     requires:
       #       - deploy-build-frontend
       #       - create-infra-frontend           
-      # - smokeTest-backend:
-      #     requires:
-      #       - deploy-backend
-      #       - migrate-db
+      - smokeTest-backend:
+          requires:
+            - deploy-backend
+            - migrate-db
       # - smokeTest-frontend:
       #     requires:
       #         - deploy-copy-frontend
