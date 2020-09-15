@@ -182,8 +182,8 @@ jobs:
           profile-name: default
       - run: mkdir /tmp/workspace
       - run:
-          name: save old workfloww
-          command: aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --query "StackSummaries[].[StackName]" --output text | grep backend | awk -F- '{print $2}' > /tmp/workspace/old_workflow.txt
+          name: save old workflow
+          command: aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --query "StackSummaries[].[StackName]" --output text | grep backend | awk -F- '{print $2}' | tee /tmp/workspace/old_workflow.txt
       - run:
           name: Create Infra Backend
           command: |
@@ -193,10 +193,9 @@ jobs:
               --tags project=udacity
       - run:
           name: save backend instance public url
-          command: |
-            mkdir /tmp/workspace
+          command: |            
             aws ec2 describe-instances --filters "Name=tag-value,Values=backend-deployment-${CIRCLE_WORKFLOW_ID:0:7}" \
-             --query "Reservations[*].Instances[*].[PublicDnsName]" --output text > /tmp/workspace/backend_url.txt      
+             --query "Reservations[*].Instances[*].[PublicDnsName]" --output text | tee /tmp/workspace/backend_url.txt      
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
