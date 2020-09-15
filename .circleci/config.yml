@@ -350,7 +350,20 @@ jobs:
             workflow: ${CIRCLE_WORKFLOW_ID:0:7}
             when: on_fail
           
-
+  promote-new-build:
+      executor: aws-cli/default
+      steps: 
+        - checkout
+        - aws-cli/setup:
+            profile-name: default
+        - attach_workspace:
+            at: /tmp/workspace
+        - run: 
+            name: promote new build in cloudfront
+            command: |
+              aws cloudformation deploy --template-file /home/circleci/project/.circleci/files/cloudfront.yml --stack-name udapeople-cloudfront --parameter-overrides WorkflowID="udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}"
+        - slack/notify-on-failure
+        
 workflows:
   default:
     jobs:
@@ -368,7 +381,7 @@ workflows:
           #   - test-backend
           #   - audit-backend-dependencies
           #   - audit-frontend-dependencies
-      # - create-infra-frontend:
+      - create-infra-frontend
       #     requires:
       #       - build-frontend
       #       - build-backend
@@ -383,19 +396,23 @@ workflows:
       - migrate-db:
           requires:
             - deploy-backend
-      # - deploy-build-frontend:
-      #     requires:
-      #       - create-infra-backend
-      # - deploy-copy-frontend:
-      #     requires:
-      #       - deploy-build-frontend
-      #       - create-infra-frontend           
+      - deploy-build-frontend:
+          requires:
+            - create-infra-backend
+      - deploy-copy-frontend:
+          requires:
+            - deploy-build-frontend
+            - create-infra-frontend           
       - smokeTest-backend:
           requires:
             - deploy-backend
             - migrate-db
-      # - smokeTest-frontend:
-      #     requires:
-      #         - deploy-copy-frontend
-      #         - smokeTest-backend
-      #         - migrate-db
+      - smokeTest-frontend:
+          requires:
+              - deploy-copy-frontend
+              - smokeTest-backend
+              - migrate-db
+      - promote-new-build:
+          requires:
+              - smokeTest-backend
+              - smokeTest-frontend
