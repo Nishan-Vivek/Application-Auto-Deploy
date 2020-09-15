@@ -32,8 +32,8 @@ Resources:
       # If this ami id is not available for you, you can find another (https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html)
       # Ubuntu 18 or higher works fine ami-0a634ae95e11c6f91
       # Ubuntu 20 ami-056cb9ae6e2df09e8
-      # My custom 
-      ImageId: ami-056cb9ae6e2df09e8
+      # My custom ami-05e27dedb1554b8af
+      ImageId: ami-05e27dedb1554b8af
       Tags:
         - Key: Name
           Value: !Sub backend-${ID}
