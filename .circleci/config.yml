@@ -180,6 +180,10 @@ jobs:
       - checkout
       - aws-cli/setup:
           profile-name: default
+      - run: mkdir /tmp/workspace
+      - run:
+          name: save old workfloww
+          command: aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --query "StackSummaries[].[StackName]" --output text | grep backend | awk -F- '{print $2}' > /tmp/workspace/old_workflow.txt
       - run:
           name: Create Infra Backend
           command: |
@@ -192,11 +196,7 @@ jobs:
           command: |
             mkdir /tmp/workspace
             aws ec2 describe-instances --filters "Name=tag-value,Values=backend-deployment-${CIRCLE_WORKFLOW_ID:0:7}" \
-             --query "Reservations[*].Instances[*].[PublicDnsName]" --output text > /tmp/workspace/backend_url.txt
-      - run: mkdir /tmp/workspace
-      - run:
-          name: save old bucket arn
-          command: aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --query "StackSummaries[].[StackName]" --output text | grep backend | awk -F- '{print $2}' > /tmp/workspace/old_workflow.txt
+             --query "Reservations[*].Instances[*].[PublicDnsName]" --output text > /tmp/workspace/backend_url.txt      
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
