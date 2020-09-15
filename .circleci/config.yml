@@ -193,10 +193,15 @@ jobs:
             mkdir /tmp/workspace
             aws ec2 describe-instances --filters "Name=tag-value,Values=backend-deployment-${CIRCLE_WORKFLOW_ID:0:7}" \
              --query "Reservations[*].Instances[*].[PublicDnsName]" --output text > /tmp/workspace/backend_url.txt
+      - run: mkdir /tmp/workspace
+      - run:
+          name: save old bucket arn
+          command: aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --query "StackSummaries[].[StackName]" --output text | grep backend | awk -F- '{print $2}' > /tmp/workspace/old_workflow.txt
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
             - backend_url.txt
+            - old_workflow.txt
 
       - run:
           name: describe events on failure
@@ -254,11 +259,7 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup:
-          profile-name: default
-      - run: mkdir /tmp/workspace
-      - run:
-          name: save old bucket arn
-          command: aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --query "StackSummaries[].[StackName]" --output text | grep backend | awk -F- '{print $2}' > /tmp/workspace/old_workflow.txt
+          profile-name: default      
       - run:
           name: Create Infra frontend
           command: |
@@ -271,10 +272,7 @@ jobs:
           command: |
             aws cloudformation describe-stack-events --stack-name "frontend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
-      - persist_to_workspace:
-          root: /tmp/workspace
-          paths:
-            - old_workflow.txt
+      
 
   deploy-build-frontend:
     docker:
