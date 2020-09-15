@@ -57,17 +57,17 @@
     npm i
 
 
-- name: "configure pm2 start as service"
-  become: yes
-  shell: |
-    env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
+# - name: "configure pm2 start as service"
+#   become: yes
+#   shell: |
+#     env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
 
-- name: "start backend app with pm2"
-  become: yes
-  shell: |    
-     pm2 start main.js --name backend
-  args:
-    chdir: /home/ubuntu/web
+# - name: "start backend app with pm2"
+#   become: yes
+#   shell: |    
+#      pm2 start main.js --name backend
+#   args:
+#     chdir: /home/ubuntu/web
 
 # work around for backend api issues
 # - name: "clone source code for workaround"
