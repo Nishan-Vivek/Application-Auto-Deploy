@@ -20,10 +20,12 @@ Resources:
     Properties:
       DistributionConfig:
         Origins:
-          - DomainName: !Sub "udapeople-${WorkflowID}.s3.amazonaws.com"
+          - DomainName: !Sub "udapeople-${WorkflowID}.s3-website-us-west-2.amazonaws.com"
             Id: webpage
-            S3OriginConfig:
-              # OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
+            CustomOriginConfig:
+              HTTPPort: '80'
+              HTTPSPort: '443'
+              OriginProtocolPolicy: http-only
         Enabled: True
         DefaultRootObject: index.html
         DefaultCacheBehavior:
