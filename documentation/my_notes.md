@@ -6,6 +6,11 @@ aws cloudformation deploy --template-file cloudfront.yml --stack-name udapeople-
 
 if grep -F "has been executed successfully." ./output.txt; then echo "true"; else echo "false"; fi
 
+
+aws cloudformation update-stack --use-previous-template --stack-name udapeople-cloudfront --parameters ParameterKey=WorkflowID,ParameterValue="frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}"
+
+              aws cloudformation deploy --template-file /home/circleci/project/.circleci/files/cloudfront.yml --stack-name udapeople-cloudfront --parameter-overrides WorkflowID="frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}"
+
 # Tasks
 
 - DEBUG why cloudfront cannot view or save employees even though it was switched []
