@@ -1,9 +1,4 @@
 ---
-
-- name: Wait 600 seconds for target connection to become reachable/usable
-  wait_for_connection: 
-    timeout: 600
-
 - name: "update apt packages."
   become: yes
   apt:
@@ -61,18 +56,17 @@
     cd /home/ubuntu/web
     npm i
 
-
-- name: "configure pm2 start as service"
-  become: yes
-  shell: |
-    env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
-
 - name: "start backend app with pm2"
   become: yes
   shell: |    
      pm2 start main.js --name backend
   args:
     chdir: /home/ubuntu/web
+
+- name: "configure pm2 start as service"
+  become: yes
+  shell: |
+    env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
 
 # work around for backend api issues
 # - name: "clone source code for workaround"
