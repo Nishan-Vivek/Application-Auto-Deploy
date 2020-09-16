@@ -372,7 +372,7 @@ jobs:
         - run: 
             name: promote new build in cloudfront
             command: |
-                  aws cloudformation update-stack --use-previous-template --stack-name udapeople-cloudfront --parameters ParameterKey=WorkflowID,ParameterValue="frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}"
+              aws cloudformation deploy --template-file /home/circleci/project/.circleci/files/cloudfront.yml --stack-name udapeople-cloudfront --parameter-overrides WorkflowID="frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}"
         - slack/notify-on-failure
 
   delete-old-environment:
