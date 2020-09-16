@@ -56,30 +56,30 @@
     cd /home/ubuntu/web
     npm i
 
-- name: "start backend app with pm2"
-  become: yes
-  shell: |    
-     pm2 start main.js --name backend
-  args:
-    chdir: /home/ubuntu/web
+# - name: "start backend app with pm2"
+#   become: yes
+#   shell: |    
+#      pm2 start main.js --name backend
+#   args:
+#     chdir: /home/ubuntu/web
 
-- name: "configure pm2 start as service"
-  become: yes
-  shell: |
-    env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
+# - name: "configure pm2 start as service"
+#   become: yes
+#   shell: |
+#     env PATH=$PATH:/usr/local/bin pm2 startup -u ubuntu
 
 # work around for backend api issues
-# - name: "clone source code for workaround"
-#   shell:
-#     cmd: |
-#       cd /home/ubuntu
-#       git clone https://github.com/Nishan-Vivek/Application-Auto-Deploy.git
+- name: "clone source code for workaround"
+  shell:
+    cmd: |
+      cd /home/ubuntu
+      git clone https://github.com/Nishan-Vivek/Application-Auto-Deploy.git
 
-# - name: "install workaround dependencies"
-#   shell:
-#     cmd: |
-#       cd /home/ubuntu/Application-Auto-Deploy/backend
-#       npm i
+- name: "install workaround dependencies"
+  shell:
+    cmd: |
+      cd /home/ubuntu/Application-Auto-Deploy/backend
+      npm i
       
 # - name: "run local debug mode for workaround"
 #   shell:
