@@ -14,11 +14,13 @@ aws cloudformation update-stack --use-previous-template --stack-name udapeople-c
 # Tasks
 
 - DEBUG why cloudfront cannot view or save employees even though it was switched []
+ - delete current distribution after it has disabled [x]
+ - start new distro []
 
- - promote phase []
+ - promote phase [x]
   - setup initial cloudfront and bucket [x]
   - promote job after passing smoke tests that redirects cloudfront to new bucket [x]
-  - break out migration:revert from rollback. rename rollback to evironment destroy []
+  - break out migration:revert from rollback.[x]
 
 
 
