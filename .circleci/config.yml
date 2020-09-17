@@ -407,6 +407,7 @@ workflows:
       - audit-backend-dependencies
       - audit-frontend-dependencies
       - create-infra-backend:
+          <<: *filter_builds
           requires:
             - build-frontend
             - build-backend
@@ -415,6 +416,7 @@ workflows:
             - audit-backend-dependencies
             - audit-frontend-dependencies
       - create-infra-frontend:
+          <<: *filter_builds
           requires:
             - build-frontend
             - build-backend
@@ -423,32 +425,40 @@ workflows:
             - audit-backend-dependencies
             - audit-frontend-dependencies
       - deploy-backend:
+          <<: *filter_builds
           requires: 
             - create-infra-backend
             - build-backend
       - migrate-db:
+          <<: *filter_builds
           requires:
             - deploy-backend
       - deploy-build-frontend:
+          <<: *filter_builds
           requires:
             - create-infra-backend
       - deploy-copy-frontend:
+          <<: *filter_builds
           requires:
             - deploy-build-frontend
             - create-infra-frontend           
       - smokeTest-backend:
+          <<: *filter_builds
           requires:
             - deploy-backend
             - migrate-db
       - smokeTest-frontend:
+          <<: *filter_builds
           requires:
               - deploy-copy-frontend
               - smokeTest-backend
               - migrate-db
       - promote-new-build:
+          <<: *filter_builds
           requires:
               - smokeTest-backend
               - smokeTest-frontend
       - delete-old-environment:
+          <<: *filter_builds
           requires:
             - promote-new-build
