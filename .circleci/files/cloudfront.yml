@@ -24,6 +24,7 @@ Resources:
             Id: webpage
             S3OriginConfig:
               OriginAccessIdentity: !Sub "origin-access-identity/cloudfront/${CloudFrontOriginAccessIdentity}"
+        PriceClass: PriceClass_100
         Enabled: True
         DefaultRootObject: index.html
         DefaultCacheBehavior:

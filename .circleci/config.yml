@@ -23,7 +23,45 @@ commands:
           command: |
             cd << parameters.layer >>
             npm i
-      - slack/notify-on-failure
+
+  # requires calling job to be run in aws-cli executor with aws-cli default profile an code checked out
+  delete-environments:
+      description: Delete stacks
+      parameters:
+        workflow:
+            type: string
+        when:
+            type: string
+      steps:
+          - run:
+              name: Empty S3 bucket
+              command: |
+                aws s3 rm s3://udapeople-frontend-deployment-<< parameters.workflow >> --recursive                
+              when: << parameters.when >>
+          - run: 
+              name: delete frontend stack
+              command: |
+                aws cloudformation delete-stack --stack-name frontend-<< parameters.workflow >>
+              when: << parameters.when >>
+          - run: 
+              name: delete backend stack
+              command: |
+                aws cloudformation delete-stack --stack-name backend-<< parameters.workflow >>
+              when: << parameters.when >>          
+          - slack/notify-on-failure
+
+  revert-migrations:
+    description: revert db migrations if they occured
+    parameters:
+      when:
+        type: string
+    steps:
+      - run: 
+          name: roll back migrations if run
+          command: |
+            if grep -F "has been executed successfully." /tmp/workspace/db-migration-log.txt; then cd /home/circleci/project/backend; npm i; npm run migrations:revert; else echo "no migrations to revert"; fi
+          when: << parameters.when >>
+
 
 orbs:
   slack: circleci/slack@3.4.2
@@ -142,6 +180,10 @@ jobs:
       - checkout
       - aws-cli/setup:
           profile-name: default
+      - run: mkdir /tmp/workspace
+      - run:
+          name: save old workflow
+          command: aws cloudformation list-stacks --stack-status-filter CREATE_COMPLETE --query "StackSummaries[].[StackName]" --output text | grep backend | awk -F- '{print $2}' | tee /tmp/workspace/old_workflow.txt
       - run:
           name: Create Infra Backend
           command: |
@@ -151,14 +193,14 @@ jobs:
               --tags project=udacity
       - run:
           name: save backend instance public url
-          command: |
-            mkdir /tmp/workspace
+          command: |            
             aws ec2 describe-instances --filters "Name=tag-value,Values=backend-deployment-${CIRCLE_WORKFLOW_ID:0:7}" \
-             --query "Reservations[*].Instances[*].[PublicDnsName]" --output text > /tmp/workspace/backend_url.txt
+             --query "Reservations[*].Instances[*].[PublicDnsName]" --output text | tee /tmp/workspace/backend_url.txt      
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
             - backend_url.txt
+            - old_workflow.txt
 
       - run:
           name: describe events on failure
@@ -216,11 +258,7 @@ jobs:
     steps:
       - checkout
       - aws-cli/setup:
-          profile-name: default
-      - run: mkdir /tmp/workspace
-      - run:
-          name: save old bucket arn
-          command: echo "arn:aws:s3:::`aws s3 ls | awk '{ print $3 } ' | grep udapeople-frontend-deployment`" > /tmp/workspace/old_s3arn.txt
+          profile-name: default      
       - run:
           name: Create Infra frontend
           command: |
@@ -233,10 +271,7 @@ jobs:
           command: |
             aws cloudformation describe-stack-events --stack-name "frontend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
-      - persist_to_workspace:
-          root: /tmp/workspace
-          paths:
-            - old_s3arn.txt
+      
 
   deploy-build-frontend:
     docker:
@@ -284,32 +319,83 @@ jobs:
           name: deploy to s3 bucket
           command: |
             cd ~/frontend
-            aws s3 sync . s3://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}
+            rm frontend.tar.gz
+            aws s3 sync . s3://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}            
+
 
   smokeTest-frontend:
-      docker:
-        - image: alpine:latest
+      executor: aws-cli/default
       steps:
-        - run:
-            name: install curl
-            command: apk add curl
+        - checkout
+        - aws-cli/setup:
+            profile-name: default
+        - attach_workspace:
+            at: /tmp/workspace
         - run:
             name: smoke test front end
             command: |
               URL="http://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}.s3-website-us-west-2.amazonaws.com/#/employees"              
-              if curl -s ${URL} | grep "Welcome"; then return 0; else return 1 ; fi
+              if curl -s ${URL} | grep "Welcome"; then exit 0; else exit 1 ; fi
+        - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+        - revert-migrations:
+            when: on_fail                
 
   smokeTest-backend:
-      docker:
-          - image: alpine:latest
+      executor: aws-cli/default
       steps:
-          - attach_workspace:
-              at: /tmp/workspace
-          - run: apk add curl
-          - run: 
-              name: smoke test backend
-              command: |
-                curl -m 20 "http://`cat /tmp/workspace/backend_url.txt`:3030/api/status"
+        - checkout
+        - aws-cli/setup:
+            profile-name: default
+        - attach_workspace:
+            at: /tmp/workspace               
+        - run: 
+            name: smoke test backend
+            command: |
+              curl -m 20 "http://`cat /tmp/workspace/backend_url.txt`:3030/api/status"
+        - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+        - revert-migrations:
+            when: on_fail
+          
+  promote-new-build:
+      executor: aws-cli/default
+      steps: 
+        - checkout
+        - aws-cli/setup:
+            profile-name: default
+        - attach_workspace:
+            at: /tmp/workspace
+        - run: 
+            name: promote new build in cloudfront
+            command: |
+              aws cloudformation deploy --template-file /home/circleci/project/.circleci/files/cloudfront.yml --stack-name udapeople-cloudfront --parameter-overrides WorkflowID="frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}"
+        - slack/notify-on-failure
+
+# Could not reuse command as no obvious way of getting a variable from inside job out to circleci workflow environment
+  delete-old-environment:
+    executor: aws-cli/default
+    steps:
+      - checkout
+      - aws-cli/setup:
+          profile-name: default
+      - attach_workspace:
+          at: /tmp/workspace     
+      - run:
+          name: Empty S3 bucket
+          command: |
+            aws s3 rm s3://udapeople-frontend-deployment-`cat /tmp/workspace/old_workflow.txt` --recursive         
+      - run: 
+          name: delete frontend stack
+          command: |
+            aws cloudformation delete-stack --stack-name frontend-`cat /tmp/workspace/old_workflow.txt`        
+      - run: 
+          name: delete backend stack
+          command: |
+            aws cloudformation delete-stack --stack-name backend-`cat /tmp/workspace/old_workflow.txt`                   
+      - slack/notify-on-failure 
 
 workflows:
   default:
@@ -349,11 +435,20 @@ workflows:
       - deploy-copy-frontend:
           requires:
             - deploy-build-frontend
-            - create-infra-frontend
+            - create-infra-frontend           
+      - smokeTest-backend:
+          requires:
+            - deploy-backend
             - migrate-db
       - smokeTest-frontend:
           requires:
               - deploy-copy-frontend
-      - smokeTest-backend:
+              - smokeTest-backend
+              - migrate-db
+      - promote-new-build:
           requires:
-            - deploy-backend
+              - smokeTest-backend
+              - smokeTest-frontend
+      - delete-old-environment:
+          requires:
+            - promote-new-build
