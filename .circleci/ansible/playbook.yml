@@ -8,6 +8,7 @@
   roles: 
     - weareinteractive.environment
     - configure-server
+    - configure-prometheus-node-exporter
   vars:
     environment_config:
       ENVIRONMENT: production

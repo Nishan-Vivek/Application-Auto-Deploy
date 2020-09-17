@@ -12,11 +12,17 @@ aws cloudformation update-stack --use-previous-template --stack-name udapeople-c
               aws cloudformation deploy --template-file /home/circleci/project/.circleci/files/cloudfront.yml --stack-name udapeople-cloudfront --parameter-overrides WorkflowID="frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}"
 
 # Tasks
- - promote phase [x]
-  - setup initial cloudfront and bucket [x]
-  - promote job after passing smoke tests that redirects cloudfront to new bucket [x]
-  - break out migration:revert from rollback.[x]
-  - clean up old stacks on succesfuly promotion [x]
+
+- Setup monitor and logging
+  - setup prometheus server []
+      - create instance [x]
+      - install server software []
+      - setup aws service discovery []
+  - setup back-end monitoring []
+  - setup alerts []
+  
+
+
 
 - DEBUG why cloudfront cannot view or save employees even though it was switched []
  - delete current distribution after it has disabled [x]
@@ -26,6 +32,12 @@ aws cloudformation update-stack --use-previous-template --stack-name udapeople-c
 
 
 ## Done
+
+ - promote phase [x]
+  - setup initial cloudfront and bucket [x]
+  - promote job after passing smoke tests that redirects cloudfront to new bucket [x]
+  - break out migration:revert from rollback.[x]
+  - clean up old stacks on succesfuly promotion [x]
 
 - test migration revert with forced true [x]
 - capture failed smoke test screen shot from circleci [SCREENSHOT6]

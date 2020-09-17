@@ -10,6 +10,7 @@ filter_builds: &filter_builds
     branches:
       only:
         - master
+        - /wip\/.*/
 
 commands:
   install-dependencies:
@@ -400,12 +401,12 @@ jobs:
 workflows:
   default:
     jobs:
-      - build-frontend
+      # - build-frontend
       - build-backend
-      - test-backend
-      - test-frontend
-      - audit-backend-dependencies
-      - audit-frontend-dependencies
+      # - test-backend
+      # - test-frontend
+      # - audit-backend-dependencies
+      # - audit-frontend-dependencies
       - create-infra-backend:
           <<: *filter_builds
           requires:
