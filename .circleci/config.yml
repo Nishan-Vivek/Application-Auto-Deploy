@@ -401,26 +401,26 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      # - test-backend
-      # - test-frontend
-      # - audit-backend-dependencies
-      # - audit-frontend-dependencies
-      - create-infra-backend
-          # requires:
-          #   - build-frontend
-          #   - build-backend
-          #   - test-frontend
-          #   - test-backend
-          #   - audit-backend-dependencies
-          #   - audit-frontend-dependencies
-      - create-infra-frontend
-      #     requires:
-      #       - build-frontend
-      #       - build-backend
-      #       - test-frontend
-      #       - test-backend
-      #       - audit-backend-dependencies
-      #       - audit-frontend-dependencies
+      - test-backend
+      - test-frontend
+      - audit-backend-dependencies
+      - audit-frontend-dependencies
+      - create-infra-backend:
+          requires:
+            - build-frontend
+            - build-backend
+            - test-frontend
+            - test-backend
+            - audit-backend-dependencies
+            - audit-frontend-dependencies
+      - create-infra-frontend:
+          requires:
+            - build-frontend
+            - build-backend
+            - test-frontend
+            - test-backend
+            - audit-backend-dependencies
+            - audit-frontend-dependencies
       - deploy-backend:
           requires: 
             - create-infra-backend

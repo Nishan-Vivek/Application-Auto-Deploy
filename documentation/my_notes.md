@@ -12,17 +12,15 @@ aws cloudformation update-stack --use-previous-template --stack-name udapeople-c
               aws cloudformation deploy --template-file /home/circleci/project/.circleci/files/cloudfront.yml --stack-name udapeople-cloudfront --parameter-overrides WorkflowID="frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}"
 
 # Tasks
-
-- DEBUG why cloudfront cannot view or save employees even though it was switched []
- - delete current distribution after it has disabled [x]
- - start new distro []
-
  - promote phase [x]
   - setup initial cloudfront and bucket [x]
   - promote job after passing smoke tests that redirects cloudfront to new bucket [x]
   - break out migration:revert from rollback.[x]
 
-
+- DEBUG why cloudfront cannot view or save employees even though it was switched []
+ - delete current distribution after it has disabled [x]
+ - start new distro [x]
+ - Issue is related browser blocking mixed ssl, likely needs more involved work around like elb or adding cert to backend server will do later []
 
 
 
