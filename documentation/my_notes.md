@@ -16,6 +16,7 @@ aws cloudformation update-stack --use-previous-template --stack-name udapeople-c
   - setup initial cloudfront and bucket [x]
   - promote job after passing smoke tests that redirects cloudfront to new bucket [x]
   - break out migration:revert from rollback.[x]
+  - clean up old stacks on succesfuly promotion [x]
 
 - DEBUG why cloudfront cannot view or save employees even though it was switched []
  - delete current distribution after it has disabled [x]
