@@ -407,6 +407,7 @@ workflows:
       - audit-backend-dependencies
       - audit-frontend-dependencies
       - create-infra-backend:
+          <<: *filter_builds
           requires:
             - build-frontend
             - build-backend
@@ -415,6 +416,7 @@ workflows:
             - audit-backend-dependencies
             - audit-frontend-dependencies
       - create-infra-frontend:
+          <<: *filter_builds
           requires:
             - build-frontend
             - build-backend
