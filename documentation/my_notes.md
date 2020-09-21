@@ -20,7 +20,7 @@ aws cloudformation update-stack --use-previous-template --stack-name udapeople-c
       - setup aws service discovery []
   - setup back-end monitoring []
   - setup alerts []
-  
+  -
 
 
 
