@@ -12,7 +12,7 @@ aws cloudformation update-stack --use-previous-template --stack-name udapeople-c
               aws cloudformation deploy --template-file /home/circleci/project/.circleci/files/cloudfront.yml --stack-name udapeople-cloudfront --parameter-overrides WorkflowID="frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}"
 
 # Tasks
-
+https://medium.com/htc-research-engineering-blog/build-a-monitoring-dashboard-by-prometheus-grafana-741a7d949ec2
 - Setup monitor and logging
   - setup prometheus server []
       - create instance [x]
