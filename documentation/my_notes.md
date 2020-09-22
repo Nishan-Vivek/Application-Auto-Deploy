@@ -16,10 +16,10 @@ https://medium.com/htc-research-engineering-blog/build-a-monitoring-dashboard-by
 - Setup monitor and logging
   - setup prometheus server []
       - create instance [x]
-      - install server software []
-      - setup aws service discovery []
-  - setup back-end monitoring []
-  - setup alerts []
+      - install server software [x]
+      - setup aws service discovery [x]
+  - setup back-end monitoring [x]
+  - setup alerts [] -- going to use grafana
   -
 
 
