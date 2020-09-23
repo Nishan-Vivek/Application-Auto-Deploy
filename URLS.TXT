@@ -2,13 +2,13 @@
  https://github.com/Nishan-Vivek/Application-Auto-Deploy
 
 [URL2] S3 Bucket
-TODO: Link to S3 bucket
+http://udapeople-frontend-deployment-932b769.s3-website-us-west-2.amazonaws.com
 
 [URL3] Cloudfront URL
 d2w3r79mg45423.cloudfront.net
 
 [URL4] Backend Server
-TODO: URL for your back-end server in EC2
+http://ec2-54-185-82-65.us-west-2.compute.amazonaws.com:3030/
 
 [URL5a] Prometheus Server
 http://ec2-35-160-38-90.us-west-2.compute.amazonaws.com:9090/targets
@@ -17,4 +17,3 @@ http://ec2-35-160-38-90.us-west-2.compute.amazonaws.com:9090/targets
 http://ec2-35-160-38-90.us-west-2.compute.amazonaws.com:3000/d/mRSUn9dGz/udapeople?orgId=1
 Username: udacity
 Password: 12345678
-
