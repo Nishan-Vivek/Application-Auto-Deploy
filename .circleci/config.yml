@@ -442,40 +442,40 @@ workflows:
     jobs:
       - build-frontend
       - build-backend
-      - test-backend:
-          requires:
-            - build-backend
-            - build-frontend 
-      - test-frontend:
-          requires:
-            - build-backend
-            - build-frontend 
-      - audit-backend-dependencies:
-          requires:
-            - build-backend
-            - build-frontend 
-      - audit-frontend-dependencies:
-          requires:
-            - build-backend
-            - build-frontend 
+      # - test-backend:
+      #     requires:
+      #       - build-backend
+      #       - build-frontend 
+      # - test-frontend:
+      #     requires:
+      #       - build-backend
+      #       - build-frontend 
+      # - audit-backend-dependencies:
+      #     requires:
+      #       - build-backend
+      #       - build-frontend 
+      # - audit-frontend-dependencies:
+      #     requires:
+      #       - build-backend
+      #       - build-frontend 
       - create-infra-backend:
           <<: *filter_builds
           requires:
             - build-backend
             - build-frontend            
-            - test-frontend
-            - test-backend
-            - audit-backend-dependencies
-            - audit-frontend-dependencies
+            # - test-frontend
+            # - test-backend
+            # - audit-backend-dependencies
+            # - audit-frontend-dependencies
       - create-infra-frontend:
           <<: *filter_builds
           requires:
             - build-frontend
             - build-backend
-            - test-frontend
-            - test-backend
-            - audit-backend-dependencies
-            - audit-frontend-dependencies
+            # - test-frontend
+            # - test-backend
+            # - audit-backend-dependencies
+            # - audit-frontend-dependencies
       - deploy-backend:
           <<: *filter_builds
           requires: 
