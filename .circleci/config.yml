@@ -201,12 +201,12 @@ jobs:
           paths:
             - backend_url.txt
             - old_workflow.txt
-
       - run:
           name: describe events on failure
           command: |
             aws cloudformation describe-stack-events --stack-name "backend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
+      - slack/notify-on-failure
 
   migrate-db:
     docker:
@@ -252,6 +252,7 @@ jobs:
           command: |
             cd .circleci/ansible/
             ansible-playbook -i inventory.txt playbook.yml
+      - slack/notify-on-failure
 
   create-infra-frontend:
     executor: aws-cli/default
@@ -271,6 +272,7 @@ jobs:
           command: |
             aws cloudformation describe-stack-events --stack-name "frontend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
+      - slack/notify-on-failure
       
 
   deploy-build-frontend:
@@ -320,7 +322,8 @@ jobs:
           command: |
             cd ~/frontend
             rm frontend.tar.gz
-            aws s3 sync . s3://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}            
+            aws s3 sync . s3://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}
+      - slack/notify-on-failure
 
 
   smokeTest-frontend:
@@ -340,7 +343,8 @@ jobs:
             workflow: ${CIRCLE_WORKFLOW_ID:0:7}
             when: on_fail
         - revert-migrations:
-            when: on_fail                
+            when: on_fail
+        - slack/notify-on-failure
 
   smokeTest-backend:
       executor: aws-cli/default
@@ -359,6 +363,7 @@ jobs:
             when: on_fail
         - revert-migrations:
             when: on_fail
+        - slack/notify-on-failure
           
   promote-new-build:
       executor: aws-cli/default
