@@ -263,12 +263,13 @@ jobs:
           command: |
             cd .circleci/ansible/
             ansible-playbook -i inventory.txt playbook.yml
+      - slack/notify-on-failure
       - delete-environments:
             workflow: ${CIRCLE_WORKFLOW_ID:0:7}
             when: on_fail
       - revert-migrations:
             when: on_fail
-      - slack/notify-on-failure
+      
 
   create-infra-frontend:
     executor: aws-cli/default
