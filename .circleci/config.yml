@@ -215,9 +215,12 @@ jobs:
       - slack/notify-on-failure
 
   migrate-db:
-    docker:
-      - image: cimg/node:lts
+    executor: aws-cli/default
     steps:
+      - aws-cli/setup:
+          profile-name: default
+      - attach_workspace:
+          at: /tmp/workspace
       - checkout
       - install-dependencies:
           layer: "backend"
@@ -239,14 +242,15 @@ jobs:
       - slack/notify-on-failure
 
   deploy-backend:
-    docker:
-      - image: cimg/base:2020.01
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["	f1:b6:04:ba:fe:3b:33:da:2a:62:24:c1:bf:23:3f:d2"]
+   executor: aws-cli/default
+   steps:
+      - aws-cli/setup:
+          profile-name: default
       - attach_workspace:
           at: /tmp/workspace
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["	f1:b6:04:ba:fe:3b:33:da:2a:62:24:c1:bf:23:3f:d2"]     
       - run:
           name: Install Ansible & playbook dependencies
           command: |            
@@ -301,11 +305,12 @@ jobs:
       
 
   deploy-build-frontend:
-    docker:
-      - image: cimg/node:lts
+    executor: aws-cli/default
     steps:
+      - aws-cli/setup:
+          profile-name: default
       - attach_workspace:
-          at: /tmp/workspace
+          at: /tmp/workspace    
       - checkout
       - install-dependencies:
           layer: "frontend"
