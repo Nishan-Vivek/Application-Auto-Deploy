@@ -206,6 +206,11 @@ jobs:
           command: |
             aws cloudformation describe-stack-events --stack-name "backend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
+      - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+      - revert-migrations:
+            when: on_fail
       - slack/notify-on-failure
 
   migrate-db:
@@ -225,6 +230,11 @@ jobs:
           root: /tmp/workspace
           paths:
             - db-migration-log.txt
+      - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+      - revert-migrations:
+            when: on_fail
       - slack/notify-on-failure
 
   deploy-backend:
@@ -252,6 +262,11 @@ jobs:
           command: |
             cd .circleci/ansible/
             ansible-playbook -i inventory.txt playbook.yml
+      - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+      - revert-migrations:
+            when: on_fail
       - slack/notify-on-failure
 
   create-infra-frontend:
@@ -272,6 +287,11 @@ jobs:
           command: |
             aws cloudformation describe-stack-events --stack-name "frontend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
+      - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+      - revert-migrations:
+            when: on_fail
       - slack/notify-on-failure
       
 
@@ -299,6 +319,11 @@ jobs:
           root: /tmp/workspace
           paths:
             - frontend.tar.gz
+      - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+      - revert-migrations:
+            when: on_fail
       - slack/notify-on-failure
 
   deploy-copy-frontend:
@@ -323,6 +348,11 @@ jobs:
             cd ~/frontend
             rm frontend.tar.gz
             aws s3 sync . s3://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}
+      - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+      - revert-migrations:
+            when: on_fail
       - slack/notify-on-failure
 
 
