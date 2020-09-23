@@ -10,6 +10,7 @@ filter_builds: &filter_builds
     branches:
       only:
         - master
+        - wip-prep
 
 commands:
   install-dependencies:
