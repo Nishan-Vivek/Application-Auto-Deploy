@@ -226,8 +226,7 @@ jobs:
           layer: "backend"
       - run:
           name: Migrate DB
-          command: |
-            mkdir /tmp/workspace
+          command: |            
             cd backend
             npm run migrations | tee /tmp/workspace/db-migration-log.txt
       - persist_to_workspace:
