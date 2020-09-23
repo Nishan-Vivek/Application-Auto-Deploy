@@ -10,7 +10,7 @@ filter_builds: &filter_builds
     branches:
       only:
         - master
-        # - wip-Prometheus
+
 
 commands:
   install-dependencies:
@@ -49,7 +49,7 @@ commands:
               command: |
                 aws cloudformation delete-stack --stack-name backend-<< parameters.workflow >>
               when: << parameters.when >>          
-          - slack/notify-on-failure
+          
 
   revert-migrations:
     description: revert db migrations if they occured
@@ -202,45 +202,60 @@ jobs:
           paths:
             - backend_url.txt
             - old_workflow.txt
-
       - run:
           name: describe events on failure
           command: |
             aws cloudformation describe-stack-events --stack-name "backend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
+      - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+      - revert-migrations:
+            when: on_fail
+      - slack/notify-on-failure
 
   migrate-db:
-    docker:
-      - image: cimg/node:lts
+    executor: aws-cli/default
     steps:
+      - aws-cli/setup:
+          profile-name: default
+      - attach_workspace:
+          at: /tmp/workspace
       - checkout
       - install-dependencies:
           layer: "backend"
       - run:
           name: Migrate DB
-          command: |
-            mkdir /tmp/workspace
+          command: |            
             cd backend
             npm run migrations | tee /tmp/workspace/db-migration-log.txt
       - persist_to_workspace:
           root: /tmp/workspace
           paths:
             - db-migration-log.txt
+      - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+      - revert-migrations:
+            when: on_fail
       - slack/notify-on-failure
 
   deploy-backend:
-    docker:
-      - image: alpine:latest
-    steps:
-      - checkout
-      - add_ssh_keys:
-          fingerprints: ["	f1:b6:04:ba:fe:3b:33:da:2a:62:24:c1:bf:23:3f:d2"]
+   executor: aws-cli/default
+   steps:
+      - aws-cli/setup:
+          profile-name: default
       - attach_workspace:
           at: /tmp/workspace
+      - checkout
+      - add_ssh_keys:
+          fingerprints: ["	f1:b6:04:ba:fe:3b:33:da:2a:62:24:c1:bf:23:3f:d2"]     
       - run:
           name: Install Ansible & playbook dependencies
-          command: |
-            apk add --update ansible
+          command: |            
+            sudo apt update            
+            sudo apt-add-repository --yes --update ppa:ansible/ansible
+            sudo apt install ansible
             ansible-galaxy install weareinteractive.environment
       - run:
           name: Create ansible inventory
@@ -252,7 +267,14 @@ jobs:
           name: run ansible
           command: |
             cd .circleci/ansible/
-            ansible-playbook -i inventory.txt playbook.yml
+            ansible-playbook -i inventory.txt playbook.yml      
+      - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+      - revert-migrations:
+            when: on_fail
+      - slack/notify-on-failure
+      
 
   create-infra-frontend:
     executor: aws-cli/default
@@ -272,14 +294,21 @@ jobs:
           command: |
             aws cloudformation describe-stack-events --stack-name "frontend-${CIRCLE_WORKFLOW_ID:0:7}"
           when: on_fail
+      - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+      - revert-migrations:
+            when: on_fail
+      - slack/notify-on-failure
       
 
   deploy-build-frontend:
-    docker:
-      - image: cimg/node:lts
+    executor: aws-cli/default
     steps:
+      - aws-cli/setup:
+          profile-name: default
       - attach_workspace:
-          at: /tmp/workspace
+          at: /tmp/workspace    
       - checkout
       - install-dependencies:
           layer: "frontend"
@@ -298,6 +327,11 @@ jobs:
           root: /tmp/workspace
           paths:
             - frontend.tar.gz
+      - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+      - revert-migrations:
+            when: on_fail
       - slack/notify-on-failure
 
   deploy-copy-frontend:
@@ -321,7 +355,13 @@ jobs:
           command: |
             cd ~/frontend
             rm frontend.tar.gz
-            aws s3 sync . s3://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}            
+            aws s3 sync . s3://udapeople-frontend-deployment-${CIRCLE_WORKFLOW_ID:0:7}
+      - delete-environments:
+            workflow: ${CIRCLE_WORKFLOW_ID:0:7}
+            when: on_fail
+      - revert-migrations:
+            when: on_fail
+      - slack/notify-on-failure
 
 
   smokeTest-frontend:
@@ -341,7 +381,8 @@ jobs:
             workflow: ${CIRCLE_WORKFLOW_ID:0:7}
             when: on_fail
         - revert-migrations:
-            when: on_fail                
+            when: on_fail
+        - slack/notify-on-failure
 
   smokeTest-backend:
       executor: aws-cli/default
@@ -360,6 +401,7 @@ jobs:
             when: on_fail
         - revert-migrations:
             when: on_fail
+        - slack/notify-on-failure
           
   promote-new-build:
       executor: aws-cli/default
@@ -401,30 +443,42 @@ jobs:
 workflows:
   default:
     jobs:
-      # - build-frontend
+      - build-frontend
       - build-backend
-      # - test-backend
-      # - test-frontend
-      # - audit-backend-dependencies
-      # - audit-frontend-dependencies
+      - test-backend:
+          requires:
+            - build-backend
+            - build-frontend 
+      - test-frontend:
+          requires:
+            - build-backend
+            - build-frontend 
+      - audit-backend-dependencies:
+          requires:
+            - build-backend
+            - build-frontend 
+      - audit-frontend-dependencies:
+          requires:
+            - build-backend
+            - build-frontend 
       - create-infra-backend:
           <<: *filter_builds
           requires:
             - build-backend
-            # - build-frontend            
-            # - test-frontend
-            # - test-backend
-            # - audit-backend-dependencies
-            # - audit-frontend-dependencies
+            - build-frontend            
+            - test-frontend
+            - test-backend
+            - audit-backend-dependencies
+            - audit-frontend-dependencies
       - create-infra-frontend:
           <<: *filter_builds
-          # requires:
-          #   - build-frontend
-          #   - build-backend
-          #   - test-frontend
-          #   - test-backend
-          #   - audit-backend-dependencies
-          #   - audit-frontend-dependencies
+          requires:
+            - build-frontend
+            - build-backend
+            - test-frontend
+            - test-backend
+            - audit-backend-dependencies
+            - audit-frontend-dependencies
       - deploy-backend:
           <<: *filter_builds
           requires: 
