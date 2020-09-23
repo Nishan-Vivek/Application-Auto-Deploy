@@ -240,7 +240,7 @@ jobs:
 
   deploy-backend:
     docker:
-      - image: alpine:latest
+      - image: cimg/base:latest
     steps:
       - checkout
       - add_ssh_keys:
@@ -249,8 +249,11 @@ jobs:
           at: /tmp/workspace
       - run:
           name: Install Ansible & playbook dependencies
-          command: |
-            apk add --update ansible
+          command: |            
+            apt update
+            apt install-software-properties-common
+            apt-add-repository --yes --update ppa:ansible/ansible
+            apt install ansible
             ansible-galaxy install weareinteractive.environment
       - run:
           name: Create ansible inventory
